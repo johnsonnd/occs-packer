@@ -7,8 +7,8 @@ The packer template `templates/CentOS-7-x86_64-Minimal.vbox.json` uses https://w
 
 Clone this repository
 
- git clone git@github.com:reavon/reavon-packer.git
- cd reavon-packer
+ git clone git@github.com:NLM-OCCS/occs-packer.git
+ cd occs-packer
 
 == Directory structure
 
@@ -41,15 +41,15 @@ Create a file with all of your needed packer variables and source it.
 ....
 cat << PACKER > /home/${USER}/.packer_variables
 # Packer AMI Builder creds
-PACKER_AWS_ACCESS_KEY=
-PACKER_AWS_SECRET_KEY=
+OCCS_PACKER_AWS_ACCESS_KEY=
+OCCS_PACKER_AWS_SECRET_KEY=
 
 # Packer root password
-PACKER_PASSWORD=
+OCCS_PACKER_PASSWORD=
 
-export PACKER_AWS_ACCESS_KEY
-export PACKER_AWS_SECRET_KEY
-export PACKER_PASSWORD
+export OCCS_PACKER_AWS_ACCESS_KEY
+export OCCS_PACKER_AWS_SECRET_KEY
+export OCCS_PACKER_PASSWORD
 PACKER
 ....
 
