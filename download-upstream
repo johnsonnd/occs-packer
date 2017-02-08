@@ -1,0 +1,10 @@
+#!/bin/bash
+
+CLOUDWATCH_FILE=CloudWatchMonitoringScripts-1.2.1.zip
+CLOUDWATCH_URL=http://aws-cloudwatch.s3.amazonaws.com/downloads/${CLOUDWATCH_FILE}
+CLOUDWATCH_MD5=${CLOUDWATCH_FILE}.md5
+
+mkdir -p files/tmp
+curl -o files/tmp/${CLOUDWATCH_FILE} ${CLOUDWATCH_URL}
+md5sum --check files/tmp/${CLOUDWATCH_MD5}
+
