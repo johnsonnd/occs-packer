@@ -39,17 +39,21 @@ Create a file with all of your needed packer variables and source it.
 
 [source,bash]
 ....
-cat << PACKER > /home/${USER}/.packer_variables
-# Packer AMI Builder creds
+cat > ${HOME}/.occs_packer_variables << PACKER
+# OCCS Packer AMI Builder creds
 OCCS_PACKER_AWS_ACCESS_KEY=
 OCCS_PACKER_AWS_SECRET_KEY=
 
-# Packer root password
+# root password for packer login
 OCCS_PACKER_PASSWORD=
+
+# Are we headless??
+OCCS_PACKER_HEADLESS=true
 
 export OCCS_PACKER_AWS_ACCESS_KEY
 export OCCS_PACKER_AWS_SECRET_KEY
 export OCCS_PACKER_PASSWORD
+export OCCS_PACKER_HEADLESS
 PACKER
 ....
 

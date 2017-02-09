@@ -2,6 +2,15 @@
 
 set -e
 
+if [[ -f $HOME/.occs_packer_variables ]];then
+  . $HOME/.occs_packer_variables
+else
+  echo ""
+  echo "Varibles for Packer not set"
+  echo ""
+  exit 1
+fi
+
 if [[ $# -ge 1 ]]; then
   PACKER_LOG=1
   PACKER_LOG_PATH="logs/packer_debug_$(date +"%y%m%d").log"
