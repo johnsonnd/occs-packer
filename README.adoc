@@ -61,7 +61,7 @@ Fill in the variables and source it
 
 [source,bash]
 ....
-. /home/${USER}/.packer_variables
+. ${HOME}/.occs_packer_variables
 ....
 
 Export the template we will be using
