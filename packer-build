@@ -2,7 +2,7 @@
 
 set -e
 
-if [[ -f $HOME/.occs_packer_variables ]];then
+if [[ -f $HOME/.occs_packer_variables ]]; then
   . $HOME/.occs_packer_variables
 else
   echo "" 1>&2
@@ -15,6 +15,12 @@ if [[ $# -ne 1 ]]; then
   echo "I need a template file!" 1>&2
   exit 1
 fi
+
+if [[ -z "$OCCS_PACKER_PASSWORD" ]]; then
+  echo "Specify OCCS_PACKER_PASSWORD in \$HOME/.occs_packer_variables" 1>&2
+  exit 1
+fi
+sed -e "s/{{OCCS_PACKER_PASSWORD}}/$OCCS_PACKER_PASSWORD/g" http/ks.cfg.tmpl > http/ks.cfg
 
 TEMPLATE_FILE=$1
 if [[ -f "$TEMPLATE_FILE" ]]; then

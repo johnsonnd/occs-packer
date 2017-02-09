@@ -41,7 +41,7 @@ reboot
 
 # Root password
 # rootpw --lock --plaintext "$(openssl rand -base64 32)"
-rootpw --iscrypted "$6$q8U51c/Qr.MRDKN6$CfUSGGA5vyU8ARS0aOQDqHturyEYjpOyq4K4phDoTPP3nkbn3eVhsi9Il.YpRW2vSYu4PEmvgz4kOIzEaH7Zm."
+rootpw --plaintext "{{OCCS_PACKER_PASSWORD}}"
 
 # SELinux configuration
 selinux --permissive
@@ -183,6 +183,7 @@ tmux
 vim-enhanced
 yum-plugin-fastestmirror
 yum-utils
+awscli
 ### Begin DevOps ( sorted by alpha )
 # centos-release-scl is installed from CentOS-extras repo
 # look in scripts/scripts_devops/base.sh

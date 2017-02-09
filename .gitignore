@@ -14,3 +14,4 @@ packer_cache/
 !/puppet/modules/helloworld/
 vagrant/
 /files/tmp/*.zip
+/http/ks.cfg
