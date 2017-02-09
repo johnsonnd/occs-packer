@@ -5,26 +5,36 @@ set -e
 if [[ -f $HOME/.occs_packer_variables ]];then
   . $HOME/.occs_packer_variables
 else
-  echo ""
-  echo "Varibles for Packer not set"
-  echo ""
+  echo "" 1>&2
+  echo "Varibles for Packer not set" 1>&2
+  echo "" 1>&2
   exit 1
 fi
 
-if [[ $# -ge 1 ]]; then
-  PACKER_LOG=1
-  PACKER_LOG_PATH="logs/packer_debug_$(date +"%y%m%d").log"
+if [[ $# -ne 1 ]]; then
+  echo "I need a template file!" 1>&2
+  exit 1
+fi
 
-  if [ -f $PACKER_LOG_PATH ]; then
-    PACKER_LOG_PATH="logs/packer_debug_$(date +"%y%m%d%H%M").log"
-  fi
-
-  export PACKER_LOG
-  export PACKER_LOG_PATH
-
-  packer build --on-error=ask templates/$1
-  exit $?
+TEMPLATE_FILE=$1
+if [[ -f "$TEMPLATE_FILE" ]]; then
+  TEMPLATE_PATH="$TEMPLATE_FILE"
+elif [[ -f "templates/$TEMPLATE_FILE" ]]; then
+  TEMPLATE_PATH="templates/$TEMPLATE_FILE"
 else
-  echo "I need a template file!"
+  echo "$TEMPLATE_FILE: template file not found" 1>&2
   exit 1
 fi
+
+PACKER_LOG=1
+PACKER_LOG_PATH="logs/packer_debug_$(date +"%y%m%d").log"
+
+if [ -f $PACKER_LOG_PATH ]; then
+  PACKER_LOG_PATH="logs/packer_debug_$(date +"%y%m%d%H%M").log"
+fi
+
+export PACKER_LOG
+export PACKER_LOG_PATH
+
+packer build --on-error=ask $TEMPLATE_PATH
+exit $?
