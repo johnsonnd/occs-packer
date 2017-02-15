@@ -16,11 +16,20 @@ if [[ $# -ne 1 ]]; then
   exit 1
 fi
 
-if [[ -z "$OCCS_PACKER_PASSWORD" ]]; then
-  echo "Specify OCCS_PACKER_PASSWORD in \$HOME/.occs_packer_variables" 1>&2
+if [[ -z "$OCCS_PACKER_ROOT_PASSWORD" ]]; then
+  echo "Specify OCCS_PACKER_ROOT_PASSWORD in \$HOME/.occs_packer_variables" 1>&2
   exit 1
 fi
-sed -e "s/{{OCCS_PACKER_PASSWORD}}/$OCCS_PACKER_PASSWORD/g" http/ks.cfg.tmpl > http/ks.cfg
+
+if [[ -z "$OCCS_PACKER_ANSIBLE_PASSWORD" ]]; then
+  echo "Specify OCCS_PACKER_ANSIBLE_PASSWORD in \$HOME/.occs_packer_variables" 1>&2
+  exit 1
+fi
+
+# http/ks.cfg is in .gitignore
+sed -e "s/{{OCCS_PACKER_ROOT_PASSWORD}}/$OCCS_PACKER_ROOT_PASSWORD/g" http/ks.cfg.tmpl > http/ks.cfg
+sed -i "s/{{OCCS_PACKER_ANSIBLE_PASSWORD}}/$OCCS_PACKER_ANSIBLE_PASSWORD/g" http/ks.cfg
+# sed -i "s/{{OCCS_ANSIBLE_PUB_KEY}}/$OCCS_ANSIBLE_PUB_KEY/g" http/ks.cfg
 
 TEMPLATE_FILE=$1
 if [[ -f "$TEMPLATE_FILE" ]]; then
