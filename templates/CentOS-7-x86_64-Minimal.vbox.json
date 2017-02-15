@@ -18,7 +18,7 @@
     "machine_vram": "16",
     "outputs_directory": "builds",
     "vm_name": "centos7",
-    "password": "{{ env `OCCS_PACKER_PASSWORD` }}",
+    "password": "{{ env `OCCS_PACKER_ROOT_PASSWORD` }}",
     "user": "root",
     "version": "7.3"
    },
@@ -26,7 +26,7 @@
   "builders": [
     {
      "type": "virtualbox-iso",
-     "name": "centos7-ami",
+     "name": "centos7-ami-base",
      "boot_command":
      [
        "<tab> linux ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg vga=791<enter><wait>"
@@ -60,41 +60,27 @@
       "type": "shell",
       "remote_folder": "/root",
       "inline": [
-        "yum -y localinstall https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm",
-        "yum -y install puppet-agent"
+        "yum -y install ansible",
+        "sed -i '/^UUID/d' /etc/sysconfig/network-scripts/ifcfg-enp0s3"
       ]
     },
     {
-      "type": "puppet-masterless",
-      "only": [ "centos7-ami" ],
-      "puppet_bin_dir": "/opt/puppetlabs/bin/",
-      "manifest_file": "manifests/site.pp",
-      "module_paths": [ "manifests/modules" ]
-    },
-    {
       "type": "file",
-      "only": [ "centos7-ami" ],
+      "only": [ "centos7-ami-base" ],
       "source": "files/tmp/CloudWatchMonitoringScripts-1.2.1.zip",
       "destination": "/tmp/CloudWatchMonitoringScripts-1.2.1.zip",
       "direction": "upload"
     },
     {
-      "type": "file",
-      "only": [ "centos7-ami" ],
-      "source": "files/etc/cloud/cloud.cfg",
-      "destination": "/tmp/cloud.cfg",
-      "direction": "upload"
-    },
-    {
-      "type": "shell",
-      "remote_folder": "/root",
-      "scripts": [
-          "scripts/scripts_sysops/base.sh",
-          "scripts/scripts_sysops/scap-fixes.sh",
-          "scripts/scripts_devops/base.sh",
-          "scripts/scripts_sysops/cleanup.sh"
-       ]
-   }
+      "type": "ansible-local",
+      "only": [ "centos7-ami-base" ],
+      "playbook_file": "ansible/playbooks/base.yml",
+      "role_paths": [
+        "ansible/roles/ansible-cloud-init",
+        "ansible/roles/ansible-directories",
+        "ansible/roles/ansible-800-53"
+      ]
+    }
   ],
    "post-processors": [
      {
@@ -109,7 +95,7 @@
        "secret_key": "{{ user `aws_secret_key` }}",
        "region": "us-east-1",
        "s3_bucket_name": "{{ user `aws_s3_bucket_name` }}",
-       "skip_clean": true,
+       "skip_clean": false,
        "tags": {
          "release": "latest",
          "builder": "Packer",

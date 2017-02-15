@@ -15,3 +15,5 @@ packer_cache/
 vagrant/
 /files/tmp/*.zip
 /http/ks.cfg
+/ansible/roles/*
+!/ansible/roles/.gitkeep

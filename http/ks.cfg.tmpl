@@ -23,7 +23,8 @@ eula --agreed
 text
 
 # Firewall configuration
-firewall --enabled --ssh
+# firewall --enabled --ssh
+firewall --disabled
 firstboot --disable
 
 # Keyboard layouts
@@ -41,12 +42,13 @@ reboot
 
 # Root password
 # rootpw --lock --plaintext "$(openssl rand -base64 32)"
-rootpw --plaintext "{{OCCS_PACKER_PASSWORD}}"
+rootpw --plaintext "{{OCCS_PACKER_ROOT_PASSWORD}}"
 
 # SELinux configuration
 selinux --permissive
 
 # System services
+# services --enabled="sshd,rsyslog,firewalld,chronyd,oddjob"
 services --enabled="sshd,rsyslog,firewalld,chronyd,oddjob"
 
 # Do not configure the X Window System
@@ -78,7 +80,7 @@ logvol /var/log    --fstype="xfs" --size=6144 --fsoptions="defaults,nodev,nosuid
 logvol /var/log/audit  --fstype="xfs" --size=1024 --fsoptions="defaults,nodev,nosuid,noexec,noatime,discard" --name=lv_audit --vgname=vg00
 logvol /usr/nlm        --fstype="xfs" --size=4098 --fsoptions="defaults,nodev,noatime,discard" --name=lv_nlm --vgname=vg00
 
-user --groups=wheel --homedir=/home/ansible --name=ansible --password="$6$3DOLo09y.bPmRBVf$NeicwZm4bovnawz/IU/6jMQxtPJhdlAc4jkRuAxlral8Yu7P1ov961vJP.agOU418lmNFTDgNqQkhS8.2OhlH0" --iscrypted --gecos="Ansible"
+user --groups=wheel --homedir=/home/ansible --name=ansible --password="{{OCCS_PACKER_ANSIBLE_PASSWORD}}" --gecos="Ansible"
 
 %pre --interpreter=/bin/bash --logfile /tmp/ks-pre.log.1
 #!/bin/bash -x
@@ -149,6 +151,17 @@ echo "NOZEROCONF=yes" >> /etc/sysconfig/network
 ansible ALL=(ALL) NOPASSWD:ALL
 SUDOERS
 
+yum -y install ansible
+
+mkdir /home/ansible/.ssh
+chmod 700 /home/ansible/.ssh
+cat > /home/ansible/.ssh/authorized_keys << ANSIBLE_KEY
+{{OCCS_ANSIBLE_PUB_KEY}}
+ANSIBLE_KEY
+
+chown -R ansible.ansible /home/ansible/.ssh
+chmod 644 /home/ansible/.ssh/authorized_keys
+
 # Switch Anaconda to the first console
 chvt 1
 exec < /dev/tty1 > /dev/tty1 2> /dev/tty1
@@ -195,14 +208,11 @@ awscli
 #     profile = stig-rhel7-server-upstream
 # %end
 #
-# %addon com_redhat_kdump --enable --reserve-mb='auto'
-#
-# %end
+%addon com_redhat_kdump --disable
+%end
 #
 # %anaconda
 # pwpolicy root --minlen=6 --minquality=50 --notstrict --nochanges --notempty
 # pwpolicy user --minlen=6 --minquality=50 --notstrict --nochanges --notempty
 # pwpolicy luks --minlen=6 --minquality=50 --notstrict --nochanges --notempty
 # %end
-
-
