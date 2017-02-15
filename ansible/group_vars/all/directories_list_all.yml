@@ -1,0 +1,5 @@
+directories_list_all:
+  - { path: '/usr/local/admin/bin', owner: 'root', group: 'root', mode: '0700' }
+  - { path: '/usr/local/admin/backup', owner: 'root', group: 'root', mode: '0700' }
+  - { path: '/usr/local/admin/etc', owner: 'root', group: 'root', mode: '0700' }
+  - { path: '/etc/ansible/facts.d', owner: 'root', group: 'root', mode: '0700' }
