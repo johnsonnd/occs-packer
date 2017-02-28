@@ -1,0 +1,9 @@
+[submodule "ansible/roles/ansible-directories"]
+	path = ansible/roles/ansible-directories
+	url = git@github.com:NLM-OCCS/ansible-role-directories.git
+[submodule "ansible/roles/ansible-cloud-init"]
+	path = ansible/roles/ansible-cloud-init
+	url = git@github.com:NLM-OCCS/ansible-role-cloud-init
+[submodule "ansible/roles/ansible-800-53"]
+	path = ansible/roles/ansible-800-53
+	url = git@github.com:NLM-OCCS/ansible-role-800-53.git
