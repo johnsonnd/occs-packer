@@ -1,10 +1,43 @@
 #!/bin/bash
 
+# NOTE: see http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/mon-scripts.html
 CLOUDWATCH_FILE=CloudWatchMonitoringScripts-1.2.1.zip
 CLOUDWATCH_URL=http://aws-cloudwatch.s3.amazonaws.com/downloads/${CLOUDWATCH_FILE}
 CLOUDWATCH_MD5=${CLOUDWATCH_FILE}.md5
 
 mkdir -p files/tmp
-curl -o files/tmp/${CLOUDWATCH_FILE} ${CLOUDWATCH_URL}
-md5sum --check files/tmp/${CLOUDWATCH_MD5}
+
+if [[ -f files/tmp/${CLOUDWATCH_FILE} ]]; then
+    echo "File files/tmp/${CLOUDWATCH_FILE} already present" 1>&2
+else
+    echo "Downloading $CLOUDWATCH_URL ..." 1>&2
+    curl -L -o files/tmp/${CLOUDWATCH_FILE} ${CLOUDWATCH_URL}
+    md5sum --check files/tmp/${CLOUDWATCH_MD5}
+fi
+
+
+cat ANSIBLE_ROLES.txt | while read role url; do 
+    if [[ -n $role && -n $url ]]; then
+        file=files/tmp/${role}.tar.gz
+        if [[ -f $file ]]; then
+            echo "$file already present ..." 1>&2
+        else
+            echo "Downloading $url to $file ..." 1>&2
+            curl -L -s -o ${file} $url
+        fi
+
+        tgtdir=ansible/roles/${role}
+        if [[ -f $file ]]; then 
+        
+            if [[ -d $tgtdir ]]; then
+                echo "Directory $tgtdir already present" 1>&2
+            else 
+                echo "Expanding $file ..." 1>&2
+                mkdir $tgtdir
+                tar -xf $file -C $tgtdir --strip-components=1
+            fi
+        fi
+    fi
+done
+
 

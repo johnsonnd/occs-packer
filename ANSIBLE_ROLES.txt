@@ -1,0 +1,4 @@
+ansible-directories    https://github.com/NLM-OCCS/ansible-role-directories/archive/master.tar.gz
+ansible-cloud-init     https://github.com/NLM-OCCS/ansible-role-cloud-init/archive/master.tar.gz
+ansible-800-53         https://github.com/NLM-OCCS/ansible-role-800-53/archive/master.tar.gz
+
