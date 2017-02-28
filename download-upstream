@@ -15,29 +15,3 @@ else
     md5sum --check files/tmp/${CLOUDWATCH_MD5}
 fi
 
-
-cat ANSIBLE_ROLES.txt | while read role url; do 
-    if [[ -n $role && -n $url ]]; then
-        file=files/tmp/${role}.tar.gz
-        if [[ -f $file ]]; then
-            echo "$file already present ..." 1>&2
-        else
-            echo "Downloading $url to $file ..." 1>&2
-            curl -L -s -o ${file} $url
-        fi
-
-        tgtdir=ansible/roles/${role}
-        if [[ -f $file ]]; then 
-        
-            if [[ -d $tgtdir ]]; then
-                echo "Directory $tgtdir already present" 1>&2
-            else 
-                echo "Expanding $file ..." 1>&2
-                mkdir $tgtdir
-                tar -xf $file -C $tgtdir --strip-components=1
-            fi
-        fi
-    fi
-done
-
-

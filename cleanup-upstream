@@ -1,10 +1,4 @@
 #!/bin/bash
 
-cat ANSIBLE_ROLES.txt | while read role url; do 
-    if [[ -n $role ]]; then
-        rm -rf ansible/roles/${role}
-    fi
-done
-
 rm -rf files/tmp/*.zip
 rm -rf files/tmp/*.tar.gz
