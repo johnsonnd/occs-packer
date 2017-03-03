@@ -13,3 +13,4 @@
     - { role: ansible-800-53,                 tags: 800-53 }
     # Put all other roles after this line
     - { role: occsab-platform }
+    - { role: occsab-httpd }

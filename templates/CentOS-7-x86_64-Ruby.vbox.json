@@ -17,6 +17,7 @@
     "machine_memory": "1024",
     "machine_vram": "16",
     "outputs_directory": "builds",
+    "shutdown_delay": "0",
     "vm_name": "centos7-ruby",
     "password": "{{ env `OCCS_PACKER_ROOT_PASSWORD` }}",
     "user": "root",
@@ -86,7 +87,15 @@
         "ansible/roles/ansible-cloud-init",
         "ansible/roles/ansible-directories",
         "ansible/roles/ansible-800-53",
-        "ansible/roles/occsab-platform"
+        "ansible/roles/occsab-platform",
+        "ansible/roles/occsab-httpd"
+      ]
+    },
+    {
+      "type": "shell",
+      "remote_folder": "/root",
+      "inline": [
+        "sleep {{ user `shutdown_delay` }}"
       ]
     }
   ],
