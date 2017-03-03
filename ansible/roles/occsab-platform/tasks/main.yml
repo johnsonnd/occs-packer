@@ -1,0 +1,12 @@
+---
+- name: create /usr/nlm directory
+  file: path=/usr/nlm state=directory owner=root group=root mode=0755
+
+- name: create platform group
+  group: name=platform
+
+- name: create platform user
+  user: name=platform group=platform createhome=no home=/usr/nlm/apps
+
+- name: create /usr/nlm/apps directory
+  file: path=/usr/nlm/apps state=directory owner=platform group=platform mode=0755
