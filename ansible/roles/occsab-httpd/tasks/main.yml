@@ -2,22 +2,5 @@
 - name: install httpd
   yum: name=httpd state=present
 
-- name: populate /etc/sysconfig/httpd
-  copy:
-    dest: /etc/sysconfig/httpd
-    src: "{{ role_path }}/files/etc-sysconfig-httpd"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: populate /etc/httpd/conf/httpd.conf         # For now
-  template:
-    dest: /etc/httpd/conf/httpd.conf                # For now
-    src: "{{ role_path }}/templates/httpd.conf.j2"
-    backup: yes                                     # For now
-    owner: root
-    group: root
-    mode: 0644
-
-#- name: start httpd
-#  service: name=httpd state=started enabled=yes
+- name: start httpd
+  service: name=httpd state=started enabled=yes
