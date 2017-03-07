@@ -12,3 +12,4 @@
     # Keep this role second. It does *a lot* and we don't want it to overwrite our changes
     - { role: ansible-800-53,                 tags: 800-53 }
     # Put all other roles after this line
+    - { role: ansible-aws,                    tags: aws }
