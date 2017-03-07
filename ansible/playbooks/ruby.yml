@@ -14,3 +14,4 @@
     # Put all other roles after this line
     - { role: occsab-platform }
     - { role: occsab-httpd }
+    - { role: occsab-passenger }
