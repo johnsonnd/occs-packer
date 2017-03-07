@@ -78,6 +78,7 @@
       "role_paths": [
         "ansible/roles/ansible-cloud-init",
         "ansible/roles/ansible-directories",
+        "ansible/roles/ansible-aws",
         "ansible/roles/ansible-800-53"
       ]
     }
