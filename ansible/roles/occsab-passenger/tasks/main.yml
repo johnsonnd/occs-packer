@@ -1,0 +1,11 @@
+---
+- name: install yumrepo for Phusion Passenger
+  copy:
+    dest: /etc/yum.repos.d/passenger.repo
+    src: "{{ role_path }}/files/passenger.repo"
+    owner: root
+    group: root
+    mode: 0644
+
+#- name: install passenger
+#  yum: name=mod_passenger state=present

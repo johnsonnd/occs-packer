@@ -7,3 +7,6 @@
 [submodule "ansible/roles/ansible-800-53"]
 	path = ansible/roles/ansible-800-53
 	url = git@github.com:NLM-OCCS/ansible-role-800-53.git
+[submodule "ansible/roles/ansible-aws"]
+	path = ansible/roles/ansible-aws
+	url = git@github.com:NLM-OCCS/ansible-role-aws.git
