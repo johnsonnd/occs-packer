@@ -6,7 +6,6 @@ install
 # Use text mode install
 text
 
-
 reboot
 # url --url="mirror.centos.org/centos/7/os/x86_64"
 # repo --name "os" --baseurl="http://mirror.centos.org/centos/7/os/x86_64/" --cost=100
@@ -24,7 +23,7 @@ repo --name centos_updates --mirrorlist="http://mirrorlist.centos.org/?release=7
 # Use EPEL to install extra software
 repo --name centos_epel --mirrorlist="https://mirrors.fedoraproject.org/mirrorlist?repo=epel-7&arch=x86_64" --cost="200"
 
-# firewall --enabled --service=ssh
+# Firewall configuration
 firewall --disabled
 firstboot --disable
 # ignoredisk --only-use=vda
@@ -38,8 +37,20 @@ network  --bootproto=dhcp --device=link --ipv6=auto
 
 # Root password
 # rootpw --iscrypted thereisnopasswordanditslocked
-
+# rootpw --lock --plaintext "$(openssl rand -base64 32)"
 rootpw --plaintext "{{OCCS_PACKER_ROOT_PASSWORD}}"
+
+# System services
+
+# Do not configure the X Window System
+skipx
+
+# System timezone
+timezone UTC
+
+# ignoredisk --only-use=vda
+# System bootloader configuration
+bootloader --append=" crashkernel=auto" --location=mbr
 
 selinux --enforcing
 services --disabled="kdump" --enabled="network,sshd,rsyslog,chronyd"
@@ -67,6 +78,10 @@ logvol /var/log/audit  --fstype="xfs" --size=1024 --fsoptions="defaults,nodev,no
 logvol /usr/nlm        --fstype="xfs" --size=4098 --fsoptions="defaults,nodev,noatime,discard" --name=lv_nlm --vgname=vg00
 
 user --groups=wheel --homedir=/home/ansible --name=ansible --password="{{OCCS_PACKER_ANSIBLE_PASSWORD}}" --gecos="Ansible"
+
+%pre --interpreter=/bin/bash --logfile /tmp/ks-pre.log.1
+#!/bin/bash -x
+>>>>>>> master
 
 %post --erroronfail
 # passwd -d root
@@ -181,6 +196,12 @@ mkdir -p /var/cache/yum
 # reorder console entries
 sed -i 's/console=tty0/console=tty0 console=ttyS0,115200n8/' /boot/grub2/grub.cfg
 
+chown -R ansible.ansible /home/ansible/.ssh
+chmod 644 /home/ansible/.ssh/authorized_keys
+
+# Switch Anaconda to the first console
+chvt 1
+exec < /dev/tty1 > /dev/tty1 2> /dev/tty1
 %end
 
 %packages
@@ -228,5 +249,24 @@ yum-utils
 -libertas-usb8388-firmware
 -plymouth
 
+### Begin DevOps ( sorted by alpha )
+# centos-release-scl is installed from CentOS-extras repo
+# look in scripts/scripts_devops/base.sh
+awscli
+centos-release-scl
+### End DevOps
 %end
 
+# %addon org_fedora_oscap
+#     content-type = scap-security-guide
+#     profile = stig-rhel7-server-upstream
+# %end
+#
+%addon com_redhat_kdump --disable
+%end
+#
+# %anaconda
+# pwpolicy root --minlen=6 --minquality=50 --notstrict --nochanges --notempty
+# pwpolicy user --minlen=6 --minquality=50 --notstrict --nochanges --notempty
+# pwpolicy luks --minlen=6 --minquality=50 --notstrict --nochanges --notempty
+# %end

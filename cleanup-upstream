@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rm -rf files/tmp/*.zip
+rm -rf files/tmp/*.tar.gz

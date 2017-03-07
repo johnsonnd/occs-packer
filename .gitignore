@@ -14,6 +14,7 @@ packer_cache/
 !/puppet/modules/helloworld/
 vagrant/
 /files/tmp/*.zip
+/files/tmp/*.tar.gz
 /http/ks.cfg
 /ansible/roles/*
 !/ansible/roles/.gitkeep
