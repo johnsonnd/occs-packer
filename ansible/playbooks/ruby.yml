@@ -11,6 +11,7 @@
     # https://github.com/RedHatGov/ansible-role-800-53, forked and modified for CentOS
     # Keep this role second. It does *a lot* and we don't want it to overwrite our changes
     - { role: ansible-800-53,                 tags: 800-53 }
+    - { role: ansible-aws,                    tags: aws }
     # Put all other roles after this line
     - { role: occsab-platform }
     - { role: occsab-httpd }
