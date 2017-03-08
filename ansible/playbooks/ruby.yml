@@ -16,3 +16,4 @@
     - { role: occsab-platform }
     - { role: occsab-httpd }
     - { role: occsab-passenger }
+    - { role: occsab-ruby }
