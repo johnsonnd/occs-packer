@@ -90,7 +90,8 @@
         "ansible/roles/ansible-800-53",
         "ansible/roles/occsab-platform",
         "ansible/roles/occsab-httpd",
-        "ansible/roles/occsab-passenger"
+        "ansible/roles/occsab-passenger",
+        "ansible/roles/occsab-ruby"
       ]
     },
     {
