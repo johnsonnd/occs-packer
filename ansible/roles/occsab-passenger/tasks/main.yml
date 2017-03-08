@@ -13,8 +13,6 @@
     sslverify: yes
     sslcacert: /etc/pki/tls/certs/ca-bundle.crt
 
-#- name: import rpm key
-#  rpm_key: key=https://packagecloud.io/gpg.key state=present
-
 - name: install passenger
   yum: name=mod_passenger state=present update_cache=yes
+
