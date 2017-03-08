@@ -1,6 +1,6 @@
 ---
 - name: Enable scl repo
-  yum: name=centos-relaese-scl state=present
+  yum: name=centos-release-scl-rh state=present
 
 - name: Install ruby22
-  yum: name=rh-ruby22 state=present
+  yum: name=rh-ruby22 state=present update_cache=yes
