@@ -11,6 +11,22 @@
 - name: create /usr/nlm/apps directory
   file: path=/usr/nlm/apps state=directory owner=platform group=platform mode=0755
 
+- name: create .bash_profile for platform
+  copy:
+    dest: /usr/nlm/apps/.bash_profile
+    src: "{{ role_path }}/files/bash_profile"
+    owner: platform
+    group: platform
+    mode: 0644
+
+- name: create .bashrc for platform
+  copy:
+    dest: /usr/nlm/apps/.bashrc
+    src: "{{ role_path }}/files/bashrc"
+    owner: platform
+    group: platform
+    mode: 0644
+
 - name: create /usr/nlm/apps/logs directory
   file: path=/usr/nlm/apps/logs state=directory owner=platform group=platform mode=0755
 

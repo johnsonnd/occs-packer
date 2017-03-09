@@ -2,5 +2,7 @@
 - name: install httpd
   yum: name=httpd state=present
 
+# TODO: change to worker mpm - two lineinfile tasks
+
 - name: start httpd
   service: name=httpd state=started enabled=yes

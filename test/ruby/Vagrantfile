@@ -57,12 +57,14 @@ Vagrant.configure("2") do |config|
   # Create a private network with host-only private IP
   config.vm.network "private_network", ip: "192.168.33.17"
 
+  # TODO: test without the above defined private_network
+
   # use the insecure key
   config.ssh.insert_key = false
 
   config.vm.provider "virtualbox" do |vb|
      # Set the name of the box
-     vb.name = "centos7_test_packer"
+     vb.name = "centos7_test_ruby_packer"
 
      # Don't display the VirtualBox GUI when booting the machine
      vb.gui = false
@@ -77,6 +79,12 @@ Vagrant.configure("2") do |config|
 
   #### COMMENT OUT BELOW THIS LINE IF BUILDING BASE BOX ####
   config.vm.box = "centos7-test-packer"
+
+  # Allows running rails manually
+  config.vm.network "forwarded_port", guest: 3000, host: 3000
+
+  # Allows verifying an app deployed in Apache httpd
+  config.vm.network "forwarded_port", guest: 80, host: 3880
 
   # Override the /vagrant mount
   config.vm.synced_folder "../../", "/vagrant", disabled: false

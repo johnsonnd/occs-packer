@@ -16,3 +16,4 @@
 - name: install passenger
   yum: name=mod_passenger state=present update_cache=yes
 
+# TODO: restart Apache httpd now that Passenger is installed

@@ -4,3 +4,36 @@
 
 - name: Install ruby22
   yum: name=rh-ruby22 state=present update_cache=yes
+
+- name: Install packages needed by ruby
+  yum: pkg={{item}} state=present
+  with_items:
+    - zlib
+    - libxml2
+    - libxslt
+    - sqlite
+
+# TODO: make these depend on some var, with when
+- name: Install development packages
+  yum: pkg={{item}} state=present
+  with_items:
+    - rh-ruby22-ruby-devel
+    - zlib-devel
+    - libxml2-devel
+    - libxslt-devel
+    - sqlite-devel
+
+- name: Install /usr/nlm/apps/.gemrc
+  copy:
+    dest: /usr/nlm/apps/.gemrc
+    src: "{{ role_path }}/files/gemrc"
+    owner: platform
+    group: platform
+    mode: 0644
+
+- name: Enable rh-ruby22 for platform user
+  lineinfile:
+    # NOTE: this should be `path` in ansible >= 2.3
+    dest: /usr/nlm/apps/.bashrc
+    regexp: rh-ruby22
+    line: test -f /opt/rh/rh-ruby22/enable && . /opt/rh/rh-ruby22/enable
