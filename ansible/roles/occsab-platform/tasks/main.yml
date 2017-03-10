@@ -40,3 +40,21 @@
     owner: platform
     group: platform
     mode: 0644
+
+#- name: add read-only directories for Apache httpd
+#  sefcontext:
+#    target: '{{item}}'
+#    setype: httpd_git_something_or_other
+#    state: present
+#  with_items:
+#   - /usr/nlm/apps/httpd
+#
+#- name: add read-write directories for Apache httpd
+#  sefcontext:
+#    target: '{{item}}'
+#    setype: httpd_rw_something_t
+#    state: present
+#  with_items:
+#   - /usr/nlm/apps/logs
+#   - /usr/nlm/apps/httpd/logs
+
