@@ -21,6 +21,13 @@ def snapshots_registered_to_an_image(ec2, owner):
     return snapshots
 
 
+def remove_snapshots(ec2, snapshot_ids):
+    for snapshot_id in snapshot_ids:
+        snapshot = ec2.Snapshot(snapshot_id)
+        # snapshot.load()
+        snapshot.delete()
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('operation', choices=('list', 'remove'))
@@ -59,9 +66,7 @@ def main():
         remove = getpass("\nRemove snapshots above? [yN] ")
         if remove == 'y' or remove == 'Y':
             print("Removing snapshots...")
-            for snapshot_id in unregistered_snapshot_ids:
-                snapshot = ec2.Snapshot(snapshot_id)
-                snapshot.delete()
+            remove_snapshots(unregistered_snapshot_ids)
 
 
 if __name__ == '__main__':
