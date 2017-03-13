@@ -17,3 +17,5 @@ packer_cache/
 /files/tmp/*.tar.gz
 /http/ks.cfg
 awscreds.sh
+*.pyc
+*.pyo
