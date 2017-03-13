@@ -66,7 +66,7 @@ def main():
         remove = getpass("\nRemove snapshots above? [yN] ")
         if remove == 'y' or remove == 'Y':
             print("Removing snapshots...")
-            remove_snapshots(unregistered_snapshot_ids)
+            remove_snapshots(ec2, unregistered_snapshot_ids)
 
 
 if __name__ == '__main__':
