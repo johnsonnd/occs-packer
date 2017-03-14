@@ -1,0 +1,7 @@
+---
+nodejs_site_prefix: https://nodejs.org/dist
+nodejs_version: "4.2.2"
+nodejs_download_dir: /tmp
+nodejs_install_dir: /opt
+nodejs_owner: root
+nodejs_group: root

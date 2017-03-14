@@ -4,6 +4,12 @@
   gather_facts: true
   become: true
 
+  vars:
+    nodejs_version: "6.2.0"
+    nodejs_install_dir: /usr/nlm/apps
+    nodejs_owner: platform
+    nodejs_group: platform
+
   roles:
     # Test roles for ruby AMI
     - { role: occsab-platform }
