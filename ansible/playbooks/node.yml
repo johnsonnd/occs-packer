@@ -4,6 +4,12 @@
   gather_facts: yes
   #  remote_user: ansible
 
+  vars:
+    nodejs_version: "4.2.2"
+    nodejs_install_dir: /usr/nlm/apps
+    nodejs_owner: platform
+    nodejs_group: platform
+
   roles:
     # Other roles could depend on this role. Keep it first.
     - { role: ansible-directories,            tags: directories }

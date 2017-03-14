@@ -93,7 +93,8 @@
         "ansible/roles/occsab-platform",
         "ansible/roles/occsab-httpd",
         "ansible/roles/occsab-passenger",
-        "ansible/roles/occsab-ruby"
+        "ansible/roles/occsab-ruby",
+        "ansible/roles/occsab-node"
       ]
     },
     {
