@@ -1,9 +1,25 @@
 ---
+- name: Set ruby package for 2.2
+  set_fact:
+    ruby_package: "rh-ruby22"
+    ruby_devel_package: "rh-ruby22-ruby-devel"
+  when: ruby_version == "2.2"
+
+- name: Set ruby package for 2.3
+  set_fact:
+    ruby_package: "rh-ruby23"
+    ruby_devel_package: "rh-ruby23-ruby-devel"
+  when: ruby_version == "2.3"
+
 - name: Enable scl repo
   yum: name=centos-release-scl-rh state=present
 
-- name: Install ruby22
-  yum: name=rh-ruby22 state=present update_cache=yes
+- name: Install Ruby
+  yum: name={{ ruby_package }} state=present update_cache=yes
+
+- name: Install Ruby devel
+  yum: name="{{ ruby_devel_package }}" state=present update_cache=yes
+  when: "{{ ruby_devel }}"
 
 - name: Install packages needed by ruby
   yum: pkg={{item}} state=present
@@ -16,8 +32,8 @@
 # TODO: make these depend on some var, with when
 - name: Install development packages
   yum: pkg={{item}} state=present
+  when: "{{ ruby_devel }}"
   with_items:
-    - rh-ruby22-ruby-devel
     - zlib-devel
     - libxml2-devel
     - libxslt-devel
@@ -31,9 +47,9 @@
     group: platform
     mode: 0644
 
-- name: Enable rh-ruby22 for platform user
+- name: Enable ruby for platform user
   lineinfile:
     # NOTE: this should be `path` in ansible >= 2.3
     dest: /usr/nlm/apps/.bashrc
-    regexp: rh-ruby22
-    line: test -f /opt/rh/rh-ruby22/enable && . /opt/rh/rh-ruby22/enable
+    regexp: "{{ ruby_package }}"
+    line: test -f /opt/rh/{{ ruby_package }}/enable && . /opt/rh/{{ ruby_package }}/enable

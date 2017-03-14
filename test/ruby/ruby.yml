@@ -4,6 +4,10 @@
   gather_facts: true
   become: true
 
+  vars:
+    ruby_version: "2.3"
+    ruby_devel: True
+
   roles:
     # Test roles for ruby AMI
     - { role: occsab-platform }
