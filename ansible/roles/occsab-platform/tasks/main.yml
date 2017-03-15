@@ -41,6 +41,26 @@
     group: platform
     mode: 0644
 
+- name: Install /usr/nlm/apps/.npmrc
+  copy:
+    dest: /usr/nlm/apps/.npmrc
+    src: "{{ role_path }}/files/npmrc"
+    owner: platform
+    group: platform
+    mode: 0644
+  when: "{{ platform_include_node }}"
+
+- name: Create /usr/nlm/apps/.npmglobal
+  file: dest=/usr/nlm/apps/.npmglobal  state=directory owner=platform group=platform
+  when: "{{ platform_include_node }}"
+
+- name: Enable user specific node packages for platform user
+  lineinfile:
+    dest: /usr/nlm/apps/.bashrc
+    regexp: /usr/nlm/apps/.npmglobal
+    line: '[[ PATH =~ "/usr/nlm/apps/.npmglobal/bin" ]] || PATH="$PATH:/usr/nlm/apps/.npmglobal/bin"'
+  when: "{{ platform_include_node }}"
+
 - name: Enable node for platform user
   lineinfile:
     # NOTE: this should be `path` in ansible >= 2.3
