@@ -33,6 +33,7 @@ def parse_args():
     parser.add_argument('operation', choices=('list', 'remove'))
     parser.add_argument('--owner', metavar='OWNER_ID', default=765460880451)
     parser.add_argument('--region', metavar='REGION_NAME', default='us-east-1')
+    parser.add_argument('--noprompt', default=False, action='store_true')
     return parser.parse_args()
 
 
@@ -41,6 +42,7 @@ def main():
     opts = parse_args()
     owner = opts.owner
     region = opts.region
+    noprompt = opts.noprompt
     ec2 = boto3.resource("ec2", region_name=region)
 
     registered_snapshot_ids = snapshots_registered_to_an_image(ec2, owner)
@@ -59,15 +61,17 @@ def main():
             print("   %s" % snapshot_id)
 
     elif opts.operation == 'remove':
+        if len(unregistered_snapshot_ids) == 0:
+            print("No snapshots to remove.")
+        else:
+            print("\nUnregistered image snapshots:")
+            for snapshot_id in unregistered_snapshot_ids:
+                print("   %s" % snapshot_id)
 
-        print("\nUnregistered image snapshots:")
-        for snapshot_id in unregistered_snapshot_ids:
-            print("   %s" % snapshot_id)
-        remove = getpass("\nRemove snapshots above? [yN] ")
-        if remove == 'y' or remove == 'Y':
-            print("Removing snapshots...")
-            remove_snapshots(ec2, unregistered_snapshot_ids)
-
+            remove = 'y' if noprompt else getpass("\nRemove snapshots above? [yN] ")
+            if remove == 'y' or remove == 'Y':
+                print("Removing snapshots...")
+                remove_snapshots(ec2, unregistered_snapshot_ids)
 
 if __name__ == '__main__':
     main()
