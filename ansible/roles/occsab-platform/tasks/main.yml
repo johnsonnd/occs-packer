@@ -41,6 +41,51 @@
     group: platform
     mode: 0644
 
+- name: Install /usr/nlm/apps/.npmrc
+  copy:
+    dest: /usr/nlm/apps/.npmrc
+    src: "{{ role_path }}/files/npmrc"
+    owner: platform
+    group: platform
+    mode: 0644
+  when: "{{ platform_include_node }}"
+
+- name: Create /usr/nlm/apps/.npmglobal
+  file: dest=/usr/nlm/apps/.npmglobal  state=directory owner=platform group=platform
+  when: "{{ platform_include_node }}"
+
+- name: Enable user specific node packages for platform user
+  lineinfile:
+    dest: /usr/nlm/apps/.bashrc
+    regexp: /usr/nlm/apps/.npmglobal
+    line: '[[ PATH =~ "/usr/nlm/apps/.npmglobal/bin" ]] || PATH="$PATH:/usr/nlm/apps/.npmglobal/bin"'
+  when: "{{ platform_include_node }}"
+
+- name: Enable node for platform user
+  lineinfile:
+    # NOTE: this should be `path` in ansible >= 2.3
+    dest: /usr/nlm/apps/.bashrc
+    regexp: "{{ platform_node_path }}"
+    line: '[[ PATH =~ "{{ platform_node_path }}" ]] || PATH="$PATH:{{ platform_node_path }}"'
+  when: "{{ platform_include_node }}"
+
+- name: Enable ruby for platform user
+  lineinfile:
+    # NOTE: this should be `path` in ansible >= 2.3
+    dest: /usr/nlm/apps/.bashrc
+    regexp: "{{ platform_ruby_path }}"
+    line: test -f {{ platform_ruby_path }} && . {{ platform_ruby_path }}
+  when: "{{ platform_include_ruby }}"
+
+- name: Install /usr/nlm/apps/.gemrc
+  copy:
+    dest: /usr/nlm/apps/.gemrc
+    src: "{{ role_path }}/files/gemrc"
+    owner: platform
+    group: platform
+    mode: 0644
+  when: "{{ platform_include_ruby }}"
+
 #- name: add read-only directories for Apache httpd
 #  sefcontext:
 #    target: '{{item}}'

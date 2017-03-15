@@ -4,6 +4,12 @@
   gather_facts: true
   become: true
 
+  vars:
+    ruby_version: "2.3"
+    ruby_devel: True
+    platform_include_ruby: yes
+    platform_ruby_path: /opt/rh/rh-ruby23/enable
+
   roles:
     # Test roles for ruby AMI
     - { role: occsab-platform }

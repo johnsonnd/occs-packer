@@ -4,6 +4,11 @@
   gather_facts: yes
   #  remote_user: ansible
 
+  vars:
+    ruby_version: "2.2"
+    platform_include_ruby: yes
+    platform_ruby_path: /opt/rh/rh-ruby22/enable
+
   roles:
     # Other roles could depend on this role. Keep it first.
     - { role: ansible-directories,            tags: directories }
