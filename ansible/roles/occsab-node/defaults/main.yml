@@ -1,6 +1,6 @@
 ---
 nodejs_site_prefix: https://nodejs.org/dist
-nodejs_version: "4.2.2"
+nodejs_version: "6.10.0"
 nodejs_download_dir: /tmp
 nodejs_install_dir: /opt
 nodejs_owner: root

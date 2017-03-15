@@ -5,10 +5,12 @@
   #  remote_user: ansible
 
   vars:
-    nodejs_version: "4.2.2"
+    nodejs_version: "6.10.0"
     nodejs_install_dir: /usr/nlm/apps
     nodejs_owner: platform
     nodejs_group: platform
+    platform_include_node: yes
+    platform_node_path: /usr/nlm/apps/node/bin
 
   roles:
     # Other roles could depend on this role. Keep it first.

@@ -9,6 +9,8 @@
     nodejs_install_dir: /usr/nlm/apps
     nodejs_owner: platform
     nodejs_group: platform
+    platform_include_node: true
+    platform_node_path: /usr/nlm/apps/node/bin
 
   roles:
     # Test roles for ruby AMI
