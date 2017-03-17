@@ -28,6 +28,7 @@
     - libxml2
     - libxslt
     - sqlite
+    - libffi
 
 # TODO: make these depend on some var, with when
 - name: Install development packages
@@ -38,3 +39,4 @@
     - libxml2-devel
     - libxslt-devel
     - sqlite-devel
+    - libffi-devel

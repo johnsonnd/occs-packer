@@ -10,3 +10,6 @@
 [submodule "ansible/roles/ansible-aws"]
 	path = ansible/roles/ansible-aws
 	url = git@github.com:NLM-OCCS/ansible-role-aws.git
+[submodule "ansible/roles/ansible-awslogs"]
+	path = ansible/roles/ansible-awslogs
+	url = git@github.com:NLM-OCCS/ansible-role-awslogs.git

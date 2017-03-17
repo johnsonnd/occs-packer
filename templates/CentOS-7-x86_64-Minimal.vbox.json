@@ -89,6 +89,7 @@
         "ansible/roles/ansible-cloud-init",
         "ansible/roles/ansible-directories",
         "ansible/roles/ansible-aws",
+        "ansible/roles/ansible-awslogs",
         "ansible/roles/ansible-800-53",
         "ansible/roles/occsab-platform",
         "ansible/roles/occsab-httpd",
