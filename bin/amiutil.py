@@ -37,9 +37,50 @@ def get_latest_image(image_iter):
     return latest_image
 
 
+def tag_latest(image_iter):
+    """
+    Set the tag \"release\" to \"latest\" for the latest image.
+    Remove the tag \"release\" for other images.
+    """
+
+    # THis is a lower-level client to ec2
+    ec2_client = boto3.client('ec2')
+
+    latest_image = get_latest_image(image_iter)
+    print("Latest - %s\n" % latest_image.id)
+    for image in image_iter:
+        if image != latest_image:
+            newtags = [tag for tag in image.tags if tag['Key'] == 'release']
+            if len(newtags) > 0:
+                ec2_client.delete_tags(Tags=newtags, Resources=[image.id])
+                print('%s: removed "release" tag' % image.id)
+
+    newtags = [{'Key': 'release', 'Value': 'latest'}]
+    latest_image.create_tags(Tags=newtags)
+    print('%s: added/Updated "release" tag' % image.id)
+
+
+def deregister_old(image_iter):
+    """
+    Set the tag \"release\" to \"latest\" for the latest image.
+    Remove the tag \"release\" for other images.
+    """
+
+    latest_image = get_latest_image(image_iter)
+    print("Latest - %s\n" % latest_image.id)
+    for image in image_iter:
+        if image != latest_image:
+            image.deregister()
+            print('%s: deregistered' % image.id)
+
+    newtags = [{'Key': 'release', 'Value': 'latest'}]
+    latest_image.create_tags(Tags=newtags)
+    print('%s: added/Updated "release" tag' % image.id)
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('operation', choices=('list', 'latest', 'taglatest'))
+    parser.add_argument('operation', choices=('list', 'latest', 'taglatest', 'deregisterold'))
     parser.add_argument('--owner', metavar='OWNER_ID', default=765460880451)
     parser.add_argument('--region', metavar='REGION_NAME', default='us-east-1')
     parser.add_argument('--builder', metavar='TAG_VALUE', default=None)
@@ -83,7 +124,10 @@ def main():
         if image is not None:
             print_image(image)
     elif operation == 'taglatest':
-        print('Not yet implemented')
+        tag_latest(image_iter)
+    elif operation == 'deregisterold':
+        deregister_old(image_iter)
+
 
 if __name__ == '__main__':
     main()
