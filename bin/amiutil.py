@@ -14,6 +14,29 @@ def get_images(ec2, owner, builder=None, build=None, release=None):
     return ec2.images.filter(Owners=[str(owner)], Filters=filters)
 
 
+def get_image_timestamp(image):
+    for tag in image.tags:
+        if tag['Key'] == 'timestamp':
+            return int(tag['Value'])
+    return None
+
+
+def get_latest_image(image_iter):
+    latest_timestamp = None
+    latest_image = None
+
+    for image in image_iter:
+        timestamp = get_image_timestamp(image)
+        if timestamp is not None:
+            if latest_timestamp is None:
+                latest_timestamp = timestamp
+                latest_image = image
+            elif timestamp > latest_timestamp:
+                latest_timestamp = timestamp
+                latest_image = image
+    return latest_image
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('operation', choices=('list', 'latest', 'taglatest'))
@@ -22,8 +45,24 @@ def parse_args():
     parser.add_argument('--builder', metavar='TAG_VALUE', default=None)
     parser.add_argument('--build', metavar='TAG_VALUE', default=None)
     parser.add_argument('--release', metavar='TAG_VALUE', default=None)
-    parser.add_argument('--raw', action='store_true', default=False)
+    parser.add_argument('--output', metavar='OUTPUT', choices=('id', 'brief'), default='brief')
     return parser.parse_args()
+
+
+def print_image_id(image):
+    print(image.id)
+
+
+def print_image_briefly(image):
+    print("\n%s  \"%s\"" % (image.id, image.name))
+    for tag in image.tags:
+        print("  %s: %s" % (tag['Key'], tag['Value']))
+
+
+__print_func_map = {
+    'id': print_image_id,
+    'brief': print_image_briefly
+}
 
 
 def main():
@@ -31,20 +70,18 @@ def main():
     owner = opts.owner
     region = opts.region
     operation = opts.operation
+    print_image = __print_func_map[opts.output]
 
     ec2 = boto3.resource("ec2", region_name=region)
     image_iter = get_images(ec2, owner=owner, builder=opts.builder, build=opts.build, release=opts.release)
 
     if operation == 'list':
         for image in image_iter:
-            if opts.raw:
-                print(image.id)
-            else:
-                print("\n%s  \"%s\"" % (image.id, image.name))
-                for tag in image.tags:
-                    print("  %s: %s" % (tag['Key'], tag['Value']))
+            print_image(image)
     elif operation == 'latest':
-        print('Not yet implemented')
+        image = get_latest_image(image_iter)
+        if image is not None:
+            print_image(image)
     elif operation == 'taglatest':
         print('Not yet implemented')
 
