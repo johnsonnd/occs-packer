@@ -7,9 +7,10 @@
   vars:
     ruby_version: "2.3"
     ruby_devel: True
-    platform_include_ruby: yes
-    platform_ruby_path: /opt/rh/rh-ruby23/enable
+    appadmin_include_ruby: yes
+    appadmin_ruby_path: /opt/rh/rh-ruby23/enable
 
+    awslogs_region: us-east-1
     awslogs_logs:
      - file: /var/log/httpd/access_log
        format: "%d/%b/%Y:%H:%M:%S %z"
@@ -27,7 +28,7 @@
 
   roles:
     # Test roles for ruby AMI
-    - occsab-platform
+    - occsab-appadmin
     - occsab-httpd
     - occsab-passenger
     - occsab-ruby

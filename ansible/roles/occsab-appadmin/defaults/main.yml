@@ -1,0 +1,7 @@
+---
+appadmin_include_ruby: no
+appadmin_include_node: no
+appadmin_node_path: /usr/nlm/apps/node/bin
+appadmin_ruby_path: /opt/rh/rh-ruby23/enable
+appadmin_user: appadmin
+appadmin_group: appadmin

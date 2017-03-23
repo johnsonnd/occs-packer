@@ -7,13 +7,30 @@
   vars:
     nodejs_version: "6.2.0"
     nodejs_install_dir: /usr/nlm/apps
-    nodejs_owner: platform
-    nodejs_group: platform
-    platform_include_node: true
-    platform_node_path: /usr/nlm/apps/node/bin
+    nodejs_owner: appadmin
+    nodejs_group: appadmin
+    appadmin_include_node: true
+    appadmin_node_path: /usr/nlm/apps/node/bin
+
+    awslogs_region: us-east-1
+    awslogs_logs:
+     - file: /var/log/httpd/access_log
+       format: "%d/%b/%Y:%H:%M:%S %z"
+       time_zone: "UTC"
+       initial_position: "end_of_file"
+       group_name: Apache-Logs
+       stream_name: access-logs
+
+     - file: /var/log/httpd/error_log
+       format: "%d %b %y %H:%M:%S.%f"
+       time_zone: "UTC"
+       initial_position: "end_of_file"
+       group_name: Apache-Logs
+       stream_name: error-logs
 
   roles:
     # Test roles for ruby AMI
-    - { role: occsab-platform }
-    - { role: occsab-httpd }
-    - { role: occsab-node }
+    - occsab-appadmin
+    - occsab-httpd
+    - occsab-node
+    - ansible-awslogs
