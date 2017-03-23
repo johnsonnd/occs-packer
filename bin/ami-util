@@ -1,8 +1,16 @@
+#!/usr/bin/env python
 import boto3
 import argparse
+import re
 
 
-def get_images(ec2, owner, builder=None, build=None, release=None):
+def name_matching_iter(image_iter, name_expr):
+    for image in image_iter:
+        if re.match(name_expr, image.name):
+            yield image
+
+
+def get_images(ec2, owner, builder=None, build=None, release=None, name=None):
     filters = list()
     if builder:
         filters.append({'Name': 'tag:builder', 'Values': [builder]})
@@ -11,13 +19,17 @@ def get_images(ec2, owner, builder=None, build=None, release=None):
     if release:
         filters.append({'Name': 'tag:release', 'Values': [release]})
 
-    return ec2.images.filter(Owners=[str(owner)], Filters=filters)
+    image_iter = ec2.images.filter(Owners=[str(owner)], Filters=filters)
+    if name is not None:
+        image_iter = name_matching_iter(image_iter, name)
+    return image_iter
 
 
 def get_image_timestamp(image):
-    for tag in image.tags:
-        if tag['Key'] == 'timestamp':
-            return int(tag['Value'])
+    if image.tags:
+        for tag in image.tags:
+            if tag['Key'] == 'timestamp':
+                return int(tag['Value'])
     return None
 
 
@@ -60,31 +72,47 @@ def tag_latest(image_iter):
     print('%s: added/Updated "release" tag' % image.id)
 
 
+def deregister(image_iter):
+    """
+    Simply deregister images that match the filters
+    """
+    wait_for = []
+    for image in image_iter:
+        image.deregister()
+        print('%s: deregistered' % image.id)
+        wait_for.append(image.id)
+    return wait_for
+
+
 def deregister_old(image_iter):
     """
     Set the tag \"release\" to \"latest\" for the latest image.
-    Remove the tag \"release\" for other images.
+    Deregister the older image
     """
 
+    wait_for = []
     latest_image = get_latest_image(image_iter)
     print("Latest - %s\n" % latest_image.id)
     for image in image_iter:
         if image != latest_image:
             image.deregister()
             print('%s: deregistered' % image.id)
+            wait_for.append(image.id)
 
     newtags = [{'Key': 'release', 'Value': 'latest'}]
     latest_image.create_tags(Tags=newtags)
     print('%s: added/Updated "release" tag' % image.id)
+    return wait_for
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('operation', choices=('list', 'latest', 'taglatest', 'deregisterold'))
+    parser.add_argument('operation', choices=('list', 'latest', 'taglatest', 'deregister', 'deregisterold'))
     parser.add_argument('--owner', metavar='OWNER_ID', default=765460880451)
     parser.add_argument('--region', metavar='REGION_NAME', default='us-east-1')
     parser.add_argument('--builder', metavar='TAG_VALUE', default=None)
     parser.add_argument('--build', metavar='TAG_VALUE', default=None)
+    parser.add_argument('--name', metavar='NAME_EXPR', default=None)
     parser.add_argument('--release', metavar='TAG_VALUE', default=None)
     parser.add_argument('--output', metavar='OUTPUT', choices=('id', 'brief'), default='brief')
     return parser.parse_args()
@@ -96,8 +124,9 @@ def print_image_id(image):
 
 def print_image_briefly(image):
     print("\n%s  \"%s\"" % (image.id, image.name))
-    for tag in image.tags:
-        print("  %s: %s" % (tag['Key'], tag['Value']))
+    if image.tags:
+        for tag in image.tags:
+            print("  %s: %s" % (tag['Key'], tag['Value']))
 
 
 __print_func_map = {
@@ -114,11 +143,17 @@ def main():
     print_image = __print_func_map[opts.output]
 
     ec2 = boto3.resource("ec2", region_name=region)
-    image_iter = get_images(ec2, owner=owner, builder=opts.builder, build=opts.build, release=opts.release)
+    image_iter = get_images(ec2, owner=owner,
+                            builder=opts.builder,
+                            build=opts.build,
+                            release=opts.release,
+                            name=opts.name)
 
     if operation == 'list':
         for image in image_iter:
             print_image(image)
+    elif operation == 'deregister':
+        deregister(image_iter)
     elif operation == 'latest':
         image = get_latest_image(image_iter)
         if image is not None:

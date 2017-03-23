@@ -6,8 +6,8 @@
 
   vars:
     ruby_version: "2.2"
-    platform_include_ruby: yes
-    platform_ruby_path: /opt/rh/rh-ruby22/enable
+    appadmin_include_ruby: yes
+    appadmin_ruby_path: /opt/rh/rh-ruby22/enable
 
     awslogs_region: us-east-1
     awslogs_logs:
@@ -36,7 +36,7 @@
        format: "%b %d %H:%M:%S"
        time_zone: "LOCAL"
        initial_position: "start_of_file"
-       group_file: Syslog
+       group_name: Syslog
        stream_name: test-syslog
 
   roles:
@@ -49,7 +49,7 @@
     - { role: ansible-aws,                    tags: aws }
     - { role: ansible-awslogs,                tags: awslogs }
     # Put all other roles after this line
-    - occsab-platform
     - occsab-httpd
     - occsab-passenger
     - occsab-ruby
+    - occsab-appadmin

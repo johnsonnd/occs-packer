@@ -6,11 +6,8 @@
 
   vars:
     nodejs_version: "6.2.0"
-    nodejs_install_dir: /usr/nlm/apps
-    nodejs_owner: appadmin
-    nodejs_group: appadmin
     appadmin_include_node: true
-    appadmin_node_path: /usr/nlm/apps/node/bin
+    appadmin_node_path: /opt/node/bin
 
     awslogs_region: us-east-1
     awslogs_logs:

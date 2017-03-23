@@ -17,7 +17,7 @@
        format: "%b %d %H:%M:%S"
        time_zone: "LOCAL"
        initial_position: "start_of_file"
-       group_file: Syslog
+       group_name: Syslog
        stream_name: test-syslog
 
   roles:
