@@ -1,0 +1,26 @@
+# Tasks specific to adding node to the appadmin user by default
+---
+- name: Install /usr/nlm/apps/.npmrc
+  copy:
+    dest: /usr/nlm/apps/.npmrc
+    src: "{{ role_path }}/files/npmrc"
+    owner: "{{ appadmin_user }}"
+    group: "{{ appadmin_group }}"
+    mode: 0644
+
+- name: Create /usr/nlm/apps/.npmglobal
+  file: dest=/usr/nlm/apps/.npmglobal  state=directory owner="{{ appadmin_user }}" group="{{ appadmin_group }}"
+  when: "{{ appadmin_include_node }}"
+
+- name: Enable user specific node packages for user
+  lineinfile:
+    dest: /usr/nlm/apps/.bashrc
+    regexp: /usr/nlm/apps/.npmglobal
+    line: '[[ PATH =~ "/usr/nlm/apps/.npmglobal/bin" ]] || PATH="$PATH:/usr/nlm/apps/.npmglobal/bin"'
+
+- name: Enable node for user
+  lineinfile:
+    # NOTE: this should be `path` in ansible >= 2.3
+    dest: /usr/nlm/apps/.bashrc
+    regexp: "{{ appadmin_node_path }}"
+    line: '[[ PATH =~ "{{ appadmin_node_path }}" ]] || PATH="$PATH:{{ appadmin_node_path }}"'

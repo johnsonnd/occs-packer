@@ -1,0 +1,18 @@
+#
+# Tasks specific to enabling Ruby for the appadmin user
+#
+---
+- name: Enable ruby for user
+  lineinfile:
+    # NOTE: this should be `path` in ansible >= 2.3
+    dest: /usr/nlm/apps/.bashrc
+    regexp: "{{ appadmin_ruby_path }}"
+    line: test -f {{ appadmin_ruby_path }} && . {{ appadmin_ruby_path }}
+
+- name: Install /usr/nlm/apps/.gemrc
+  copy:
+    dest: /usr/nlm/apps/.gemrc
+    src: "{{ role_path }}/files/gemrc"
+    owner: "{{ appadmin_user }}"
+    group: "{{ appadmin_group }}"
+    mode: 0644
