@@ -75,13 +75,6 @@
       "direction": "upload"
     },
     {
-      "type": "file",
-      "only": [ "centos7-ami-base" ],
-      "source": "files/usr/local/bin/retrieve-creds.sh",
-      "destination": "/usr/local/bin/retrieve-creds.sh",
-      "direction": "upload"
-    },
-    {
       "type": "ansible-local",
       "only": [ "centos7-ami-base" ],
       "playbook_file": "ansible/playbooks/{{ user `playbook` }}.yml",
@@ -89,12 +82,13 @@
         "ansible/roles/ansible-cloud-init",
         "ansible/roles/ansible-directories",
         "ansible/roles/ansible-aws",
+        "ansible/roles/ansible-awslogs",
         "ansible/roles/ansible-800-53",
-        "ansible/roles/occsab-platform",
         "ansible/roles/occsab-httpd",
         "ansible/roles/occsab-passenger",
         "ansible/roles/occsab-ruby",
-        "ansible/roles/occsab-node"
+        "ansible/roles/occsab-node",
+        "ansible/roles/occsab-appadmin"
       ]
     },
     {
@@ -120,8 +114,8 @@
        "s3_bucket_name": "{{ user `aws_s3_bucket_name` }}",
        "skip_clean": false,
        "tags": {
-         "release": "latest",
          "builder": "Packer",
+         "build": "{{ user `playbook` }}",
          "description": "{{ user `description` }}",
          "timestamp": "{{ timestamp }}",
          "lsb_distributor": "CentOS",

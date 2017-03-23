@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import boto3
 import re
 import argparse
@@ -30,7 +31,7 @@ def remove_snapshots(ec2, snapshot_ids):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('operation', choices=('list', 'remove'))
+    parser.add_argument('operation', choices=('list', 'cleanup'))
     parser.add_argument('--owner', metavar='OWNER_ID', default=765460880451)
     parser.add_argument('--region', metavar='REGION_NAME', default='us-east-1')
     parser.add_argument('--noprompt', default=False, action='store_true')
@@ -60,7 +61,7 @@ def main():
         for snapshot_id in unregistered_snapshot_ids:
             print("   %s" % snapshot_id)
 
-    elif opts.operation == 'remove':
+    elif opts.operation == 'cleanup':
         if len(unregistered_snapshot_ids) == 0:
             print("No snapshots to remove.")
         else:

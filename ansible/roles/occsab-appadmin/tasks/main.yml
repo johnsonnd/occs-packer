@@ -2,89 +2,93 @@
 - name: create /usr/nlm directory
   file: path=/usr/nlm state=directory owner=root group=root mode=0755
 
-- name: create platform group
-  group: name=platform
+- name: create app admin group
+  group: "name={{ appadmin_group }}"
 
-- name: create platform user
-  user: name=platform group=platform createhome=no home=/usr/nlm/apps
+- name: create app admin user
+  user:
+    name: "{{ appadmin_user }}"
+    group: "{{ appadmin_group }}"
+    createhome: no
+    home: /usr/nlm/apps
 
 - name: create /usr/nlm/apps directory
-  file: path=/usr/nlm/apps state=directory owner=platform group=platform mode=0755
+  file: path=/usr/nlm/apps state=directory owner="{{ appadmin_user }}" group="{{ appadmin_group }}" mode=0755
 
-- name: create .bash_profile for platform
+- name: create .bash_profile for user
   copy:
     dest: /usr/nlm/apps/.bash_profile
     src: "{{ role_path }}/files/bash_profile"
-    owner: platform
-    group: platform
+    owner: "{{ appadmin_user }}"
+    group: "{{ appadmin_group }}"
     mode: 0644
 
-- name: create .bashrc for platform
+- name: create .bashrc for user
   copy:
     dest: /usr/nlm/apps/.bashrc
     src: "{{ role_path }}/files/bashrc"
-    owner: platform
-    group: platform
+    owner: "{{ appadmin_user }}"
+    group: "{{ appadmin_group }}"
     mode: 0644
 
 - name: create /usr/nlm/apps/logs directory
-  file: path=/usr/nlm/apps/logs state=directory owner=platform group=platform mode=0755
+  file: path=/usr/nlm/apps/logs state=directory owner="{{ appadmin_user }}" group="{{ appadmin_group }}" mode=0755
 
 - name: create /usr/nlm/apps/html directory
-  file: path=/usr/nlm/apps/html state=directory owner=platform group=platform mode=0755
+  file: path=/usr/nlm/apps/html state=directory owner="{{ appadmin_user }}" group="{{ appadmin_group }}" mode=0755
 
 - name: create /usr/nlm/apps/html/index.html as default file
   copy:
     dest: /usr/nlm/apps/html/index.html
     src: "{{ role_path }}/files/index.html"
-    owner: platform
-    group: platform
+    owner: "{{ appadmin_user }}"
+    group: "{{ appadmin_group }}"
     mode: 0644
 
 - name: Install /usr/nlm/apps/.npmrc
   copy:
     dest: /usr/nlm/apps/.npmrc
     src: "{{ role_path }}/files/npmrc"
-    owner: platform
-    group: platform
+    owner: "{{ appadmin_user }}"
+    group: "{{ appadmin_group }}"
     mode: 0644
-  when: "{{ platform_include_node }}"
+  when: "{{ appadmin_include_node }}"
 
 - name: Create /usr/nlm/apps/.npmglobal
-  file: dest=/usr/nlm/apps/.npmglobal  state=directory owner=platform group=platform
-  when: "{{ platform_include_node }}"
+  file: dest=/usr/nlm/apps/.npmglobal  state=directory owner="{{ appadmin_user }}" group="{{ appadmin_group }}"
+  when: "{{ appadmin_include_node }}"
 
-- name: Enable user specific node packages for platform user
+- name: Enable user specific node packages for user
   lineinfile:
     dest: /usr/nlm/apps/.bashrc
     regexp: /usr/nlm/apps/.npmglobal
     line: '[[ PATH =~ "/usr/nlm/apps/.npmglobal/bin" ]] || PATH="$PATH:/usr/nlm/apps/.npmglobal/bin"'
-  when: "{{ platform_include_node }}"
+  when: "{{ appadmin_include_node }}"
 
-- name: Enable node for platform user
+- name: Enable node for user
   lineinfile:
     # NOTE: this should be `path` in ansible >= 2.3
     dest: /usr/nlm/apps/.bashrc
-    regexp: "{{ platform_node_path }}"
-    line: '[[ PATH =~ "{{ platform_node_path }}" ]] || PATH="$PATH:{{ platform_node_path }}"'
-  when: "{{ platform_include_node }}"
+    regexp: "{{ appadmin_node_path }}"
+    line: '[[ PATH =~ "{{ appadmin_node_path }}" ]] || PATH="$PATH:{{ appadmin_node_path }}"'
+  when: "{{ appadmin_include_node }}"
 
-- name: Enable ruby for platform user
+- name: Enable ruby for user
   lineinfile:
     # NOTE: this should be `path` in ansible >= 2.3
     dest: /usr/nlm/apps/.bashrc
-    regexp: "{{ platform_ruby_path }}"
-    line: test -f {{ platform_ruby_path }} && . {{ platform_ruby_path }}
-  when: "{{ platform_include_ruby }}"
+    regexp: "{{ appadmin_ruby_path }}"
+    line: test -f {{ appadmin_ruby_path }} && . {{ appadmin_ruby_path }}
+  when: "{{ appadmin_include_ruby }}"
 
 - name: Install /usr/nlm/apps/.gemrc
   copy:
     dest: /usr/nlm/apps/.gemrc
     src: "{{ role_path }}/files/gemrc"
-    owner: platform
-    group: platform
+    owner: "{{ appadmin_user }}"
+    group: "{{ appadmin_group }}"
     mode: 0644
-  when: "{{ platform_include_ruby }}"
+  when: "{{ appadmin_include_ruby }}"
 
 #- name: add read-only directories for Apache httpd
 #  sefcontext:

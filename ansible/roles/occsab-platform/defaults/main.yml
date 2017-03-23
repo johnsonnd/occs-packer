@@ -1,5 +1,0 @@
----
-platform_include_ruby: no
-platform_include_node: no
-platform_node_path: /usr/nlm/apps/node/bin
-platform_ruby_path: /opt/rh/rh-ruby23/enable

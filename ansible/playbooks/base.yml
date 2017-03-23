@@ -2,7 +2,23 @@
 
 - hosts: all
   gather_facts: yes
-  #  remote_user: ansible
+
+  vars:
+    awslogs_region: us-east-1
+    awslogs_logs:
+     - file: /var/log/messages
+       format: "%b %d %H:%M:%S"
+       time_zone: "LOCAL"
+       initial_position: "start_of_file"
+       group_name: Syslog
+       stream_name: test-syslog
+
+     - file: /var/log/secure
+       format: "%b %d %H:%M:%S"
+       time_zone: "LOCAL"
+       initial_position: "start_of_file"
+       group_name: Syslog
+       stream_name: test-syslog
 
   roles:
     # Other roles could depend on this role. Keep it first.
@@ -13,3 +29,4 @@
     - { role: ansible-800-53,                 tags: 800-53 }
     # Put all other roles after this line
     - { role: ansible-aws,                    tags: aws }
+    - { role: ansible-awslogs,                tags: awslogs }
