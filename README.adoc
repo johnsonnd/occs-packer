@@ -1,6 +1,8 @@
 = Packer Templates
 
-The packer template `templates/CentOS-7-x86_64-Minimal.vbox.json` uses https://www.virtualbox.org[VirtualBox] to build identical machine images for:
+Install https://packer.io/downloads.html[Packer]. Be sure to put the packer binary to be found in your `$PATH` before `/usr/sbin/packer` If you are using Fedora and put the packer binary in `/usr/local/bin` you should not need to modify your `$PATH`.
+
+The packer template `templates/CentOS-7-x86_64-Minimal.vbox.json` uses https://www.virtualbox.org[VirtualBox] to build identical machine images for the following:
 
 * https://www.vagrantup.com/docs/boxes.html[Vagrant Box]
 * http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html[Amazon AMI]
@@ -39,7 +41,7 @@ Create a file with all of your needed packer variables and source it.
 
 [source,bash]
 ....
-cat > ${HOME}/.occs_packer_variables << PACKER
+cat > ${HOME}/.occs_packer_variables << 'PACKER'
 # OCCS Packer AMI Builder creds
 OCCS_PACKER_AWS_ACCESS_KEY=
 OCCS_PACKER_AWS_SECRET_KEY=
@@ -50,7 +52,7 @@ OCCS_PACKER_ROOT_PASSWORD=
 # Ansible password for ssh
 OCCS_PACKER_ANSIBLE_PASSWORD=
 
-# public key for you to test with
+# public key for ansible user
 OCCS_ANSIBLE_PUB_KEY=$(cat ~/.ssh/id_rsa.pub)
 
 # Are we headless??
@@ -65,7 +67,7 @@ export OCCS_PACKER_HEADLESS
 PACKER
 ....
 
-Fill in the variables and source it
+== Testing your Packer Install
 
 [source,bash]
 ....
