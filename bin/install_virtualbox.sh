@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo dnf install redhat-lsb-core
+
 ## Let's figure out where the install directory is
   ## Determine the absolute path to the install_virtualbox.sh script
 abspath="$(cd ${0%/*} 2>/dev/null; echo $PWD/${0##*/})"
@@ -63,7 +65,7 @@ if [ $(rpm -qa kernel |sort -V |tail -n 1) == kernel-$(uname -r) ]; then
     echo ""
     echo ""
     echo "Virtualbox $virtualbox_version has been downloaded. To install, issue the following sudo commands:"
-    echo "sudo dnf install binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers kernel-devel dkms ${install_dir}/${virtualbox}"
+    echo "sudo dnf install binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers kernel-devel dkms ${virtualbox}"
     echo "sudo gpasswd -a ${USER} vboxusers"
     echo ""
 else
@@ -71,7 +73,7 @@ else
     echo "Virtualbox $virtualbox_version has been downloaded"
     echo ""
     echo "You are not running the latest installed kernel. Reboot and issue the following sudo commands:"
-    echo "sudo dnf install binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers kernel-devel dkms ${install_dir}/${virtualbox}"
+    echo "sudo dnf install binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers kernel-devel dkms ${virtualbox}"
     echo "sudo gpasswd -a ${USER} vboxusers"
     echo ""
 fi
