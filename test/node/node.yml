@@ -9,6 +9,17 @@
     appadmin_include_node: true
     appadmin_node_path: /opt/node/bin
 
+    splunk_forwarder_indexer: splunk1.occs-cloud.local
+    splunk_forwarder_index: web-access
+    splunk_forwarder_logs:
+      - path: /var/log/httpd/access_log
+      - path: /var/log/httpd/error_log
+        index: web-errors
+      - path: /var/log/messages
+        index: messages
+      - path: /var/log/secure
+        index: secure
+
     awslogs_region: us-east-1
     awslogs_logs:
      - file: /var/log/httpd/access_log
@@ -31,3 +42,4 @@
     - occsab-httpd
     - occsab-node
     - ansible-awslogs
+    - splunk-forwarder
