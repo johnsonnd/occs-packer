@@ -48,6 +48,8 @@
     - { role: ansible-800-53,                 tags: 800-53 }
     - { role: ansible-aws,                    tags: aws }
     - { role: ansible-awslogs,                tags: awslogs }
+    # Commented out - we will try a different way
+    # - { role: splunk-forwarder,               tags: splunkforwarder }
     # Put all other roles after this line
     - occsab-httpd
     - occsab-passenger
