@@ -33,3 +33,4 @@
     - occsab-passenger
     - occsab-ruby
     - ansible-awslogs
+    - splunk-forwarder

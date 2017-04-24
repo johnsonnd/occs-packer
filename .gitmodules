@@ -13,3 +13,6 @@
 [submodule "ansible/roles/ansible-awslogs"]
 	path = ansible/roles/ansible-awslogs
 	url = git@github.com:NLM-OCCS/ansible-role-awslogs.git
+[submodule "ansible/roles/splunk-forwarder"]
+	path = ansible/roles/splunk-forwarder
+	url = git@github.com:NLM-OCCS/ansible-role-splunk-forwarder.git
