@@ -1,6 +1,6 @@
 = Packer Templates
 
-Install https://packer.io/downloads.html[Packer]. Be sure to put the packer binary to be found in your `$PATH` before `/usr/sbin/packer` If you are using Fedora and put the packer binary in `/usr/local/bin` you should not need to modify your `$PATH`.
+Install https://packer.io/downloads.html[Packer]. Be sure to put the packer binary in your `$PATH` before `/usr/sbin/packer` If you are using Fedora and put the packer binary in `/usr/local/bin` you should not need to modify your `$PATH`.
 
 The packer template `templates/CentOS-7-x86_64-Minimal.vbox.json` uses https://www.virtualbox.org[VirtualBox] to build identical machine images for the following:
 
