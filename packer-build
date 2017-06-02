@@ -83,14 +83,14 @@ rm -rf builds/${VMNAME}
 
 rpm_log_current=$(ls -1 logs/rpm-log-${VMNAME}* | sort -n | tail -n 1)
 
-$(sdiff -s $rpm_log_previous $rpm_log_current > logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt)
+sdiff -s $rpm_log_previous $rpm_log_current || true > logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
 
 export AWS_ACCESS_KEY_ID=${OCCS_PACKER_AWS_ACCESS_KEY}
 export AWS_SECRET_ACCESS_KEY=${OCCS_PACKER_AWS_SECRET_KEY}
 export AWS_DEFAULT_REGION=us-east-1
 
 # Upload contents of AMI at ami_build_time
-aws s3 cp logs/${rpm_log_current} s3://${AMI_CHANGELOG_BUCKET}/
+aws s3 cp ${rpm_log_current} s3://${AMI_CHANGELOG_BUCKET}/
 
 # Upload diff of RPM Log as RPM Changelog
 aws s3 cp logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt s3://${AMI_CHANGELOG_BUCKET}/
