@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 set -e
 
@@ -7,6 +7,11 @@ if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
   exit 1
 fi
 PLAYBOOK=$1
+
+AMI_BUILD_TIME="$(date +%F-%H-%M)"
+AMI_CHANGELOG_BUCKET="occs-ami-importbucket"
+
+export AMI_BUILD_TIME
 
 TEMPLATE_FILE="CentOS-7-x86_64-Minimal.vbox.json"
 if [[ $# -eq 2 ]]; then
@@ -23,11 +28,13 @@ else
 fi
 
 case $PLAYBOOK in
-  base) DESCRIPTION="CentOS 7 Base Image"; VMNAME="centos7" ;;
+  base) DESCRIPTION="CentOS 7 Base Image"; VMNAME="centos7_base" ;;
   ruby) DESCRIPTION="CentOS 7 Ruby Image"; VMNAME="centos7_ruby" ;;
   node) DESCRITION="CentOS 7 Node.js Image"; VMNAME="centos7_node" ;;
   *) echo "$PLAYBOOK: invalid AMI build" 1>&2; exit 1 ;;
 esac
+
+rpm_log_previous=$(ls -1 logs/rpm-log-${VMNAME}* | sort -n | tail -n 1)
 
 if [[ -f $HOME/.occs_packer_variables ]]; then
   . $HOME/.occs_packer_variables
@@ -54,10 +61,10 @@ sed -i "s/{{OCCS_PACKER_ANSIBLE_PASSWORD}}/$OCCS_PACKER_ANSIBLE_PASSWORD/g" http
 # sed -i "s/{{OCCS_ANSIBLE_PUB_KEY}}/$OCCS_ANSIBLE_PUB_KEY/g" http/ks.cfg
 
 PACKER_LOG=1
-PACKER_LOG_PATH="logs/packer_debug_$(date +"%y%m%d").log"
+PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}.log"
 
 if [ -f $PACKER_LOG_PATH ]; then
-  PACKER_LOG_PATH="logs/packer_debug_$(date +"%y%m%d%H%M").log"
+  PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}-$(date +%S).log"
 fi
 
 export PACKER_LOG
@@ -68,5 +75,24 @@ packer build --on-error=ask \
  -var "playbook=$PLAYBOOK" \
  -var "description=$DESCRIPTION" \
  $TEMPLATE_PATH
+
+mkdir -p archive/${VMNAME}
+mv builds/${VMNAME}/* archive/${VMNAME}/
+
+rm -rf builds/${VMNAME}
+
+rpm_log_current=$(ls -1 logs/rpm-log-${VMNAME}* | sort -n | tail -n 1)
+
+$(sdiff -s $rpm_log_previous $rpm_log_current > logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt)
+
+export AWS_ACCESS_KEY_ID=${OCCS_PACKER_AWS_ACCESS_KEY}
+export AWS_SECRET_ACCESS_KEY=${OCCS_PACKER_AWS_SECRET_KEY}
+export AWS_DEFAULT_REGION=us-east-1
+
+# Upload contents of AMI at ami_build_time
+aws s3 cp logs/${rpm_log_current} s3://${AMI_CHANGELOG_BUCKET}/
+
+# Upload diff of RPM Log as RPM Changelog
+aws s3 cp logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt s3://${AMI_CHANGELOG_BUCKET}/
 
 exit $?

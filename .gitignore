@@ -7,6 +7,8 @@ builds/
 # Not sure why I have to put * here but I do
 logs/*
 !logs/.gitkeep
+archive/*
+!archive/.gitkeep
 output-*/
 packer_cache/
 /puppet/modules/*

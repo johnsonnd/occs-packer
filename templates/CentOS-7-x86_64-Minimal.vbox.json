@@ -23,13 +23,14 @@
     "description": "CentOS 7 Base Image",
     "password": "{{ env `OCCS_PACKER_ROOT_PASSWORD` }}",
     "user": "root",
-    "version": "7.3"
+    "version": "7.3",
+    "ami_build_time": "{{ env `AMI_BUILD_TIME` }}"
    },
 
   "builders": [
     {
      "type": "virtualbox-iso",
-     "name": "centos7-ami-base",
+     "name": "{{ user `vm_name` }}",
      "boot_command":
      [
        "<tab> linux ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg vga=791<enter><wait>"
@@ -45,7 +46,8 @@
      "iso_url": "{{ user `iso_url` }}",
      "iso_checksum": "{{ user `iso_checksum` }}",
      "iso_checksum_type": "{{ user `iso_checksum_type` }}",
-     "output_directory": "{{ user `outputs_directory` }}/{{ user `vm_name` }}_{{build_name}}/",
+     "vm_name": "{{ user `vm_name` }}-{{ user `ami_build_time` }}",
+     "output_directory": "{{ user `outputs_directory` }}/{{ user `vm_name` }}",
      "shutdown_command": "/usr/sbin/halt -p",
      "ssh_password": "{{ user `password` }}",
      "ssh_username": "{{ user `user` }}",
@@ -63,20 +65,18 @@
       "type": "shell",
       "remote_folder": "/root",
       "inline": [
-        "yum -y install ansible",
+        "yum -y install ansible haveged",
         "sed -i '/^UUID/d' /etc/sysconfig/network-scripts/ifcfg-enp0s3"
       ]
     },
     {
       "type": "file",
-      "only": [ "centos7-ami-base" ],
       "source": "files/tmp/CloudWatchMonitoringScripts-1.2.1.zip",
       "destination": "/tmp/CloudWatchMonitoringScripts-1.2.1.zip",
       "direction": "upload"
     },
     {
       "type": "ansible-local",
-      "only": [ "centos7-ami-base" ],
       "playbook_file": "ansible/playbooks/{{ user `playbook` }}.yml",
       "role_paths": [
         "ansible/roles/ansible-cloud-init",
@@ -96,6 +96,19 @@
       "type": "shell",
       "remote_folder": "/root",
       "inline": [
+        "rpm -qa | sort -n > /root/rpm-log"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "/root/rpm-log",
+      "destination": "logs/rpm-log-{{ user `vm_name` }}-{{ user `ami_build_time` }}.log",
+      "direction": "download"
+    },
+    {
+      "type": "shell",
+      "remote_folder": "/root",
+      "inline": [
         "sleep {{ user `shutdown_delay` }}"
       ]
     }
@@ -104,23 +117,24 @@
      {
        "type": "vagrant",
        "keep_input_artifact": true,
-       "output": "{{ user `outputs_directory` }}/{{ user `vm_name` }}_{{ .BuildName }}.box"
+       "output": "{{ user `outputs_directory` }}/{{ user `vm_name` }}/{{ user `vm_name` }}-{{ user `ami_build_time` }}.box"
      },
      {
        "type": "amazon-import",
-       "ami_name": "packer_{{ user `vm_name` }}_{{ timestamp }}",
+       "ami_name": "{{ user `vm_name` }}-{{ user `ami_build_time` }}",
        "access_key": "{{ user `aws_access_key` }}",
        "secret_key": "{{ user `aws_secret_key` }}",
        "region": "us-east-1",
+       "s3_key_name": "{{ user `vm_name` }}-{{ user `ami_build_time` }}",
        "s3_bucket_name": "{{ user `aws_s3_bucket_name` }}",
        "skip_clean": false,
        "tags": {
-         "builder": "Packer",
-         "build": "{{ user `playbook` }}",
-         "description": "{{ user `description` }}",
-         "timestamp": "{{ timestamp }}",
-         "lsb_distributor": "CentOS",
-         "lsb_release": "{{ user `lsb_release` }}"
+         "ami_builder": "packer",
+         "ami_build": "{{ user `playbook` }}",
+         "ami_description": "{{ user `description` }}",
+         "ami_build_time": "{{ user `ami_build_time` }}",
+         "ami_lsb_distributor": "CentOS",
+         "ami_lsb_release": "{{ user `lsb_release` }}"
        }
      }
    ]
