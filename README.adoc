@@ -9,28 +9,35 @@ The packer template `templates/CentOS-7-x86_64-Minimal.vbox.json` uses https://w
 
 Clone this repository
 
- git clone git@github.com:NLM-OCCS/occs-packer.git
- cd occs-packer
+....
+git clone git@github.com:NLM-OCCS/occs-packer.git
+cd occs-packer
+git submodule init
+git submodule update
+....
 
 == Directory structure
 
 ....
-packer-templates/
-                ├── bin/                <-- Misc scripts
-                ├── builds/             <-- Repository of build's ( .ami's,.box's and .ova's )
-                ├── docs/               <-- Stuff you need to know
-                ├── files/              <-- File to be uploaded to vm (keep destination structure)
-                ├── .git/               <-- Hopefully you know what this is
-                ├── http/               <-- Keep kickstart files here
-                ├── logs/               <-- Logs from packer-build script
-                ├── manifests/          <-- Puppet Provisioner site.pp and modules download script
-                ├── packer_cache/       <-- Cached' items used by packer... including downloaded iso's
-                ├── scripts/            <-- Scripts to be executed by Shell Provisoner
-                ├── templates/          <-- Packer json tempaltes
-                ├── .editorconfig       <-- so we are all consistant
-                ├── .gitignore          <-- We don't want to share everything with the world
-                ├── packer-build*       <-- Script that kicks off packer run
-                └── README.adoc         <-- You are reading it
+occs-packer/
+           ├── ami-build           <-- script that kicks off ami builds
+           ├── ansible/            <-- Ansible provisioner roles and playbooks
+           ├── ansible.cfg         <-- Ansible configuration file.
+           ├── archive/            <-- archive of previous builds
+           ├── bin/                <-- Misc scripts
+           ├── builds/             <-- Repository of build's ( .ami's,.box's and .ova's )
+           ├── docs/               <-- Stuff you need to know
+           ├── files/              <-- File to be uploaded to vm (keep destination structure)
+           ├── .git/               <-- Hopefully you know what this is
+           ├── http/               <-- Keep kickstart files here
+           ├── logs/               <-- Logs from packer-build script
+           ├── packer_cache/       <-- Cached' items used by packer... including downloaded iso's
+           ├── scripts/            <-- Scripts to be executed by Shell Provisoner
+           ├── templates/          <-- Packer json tempaltes
+           ├── test/               <-- Tests
+           ├── .editorconfig       <-- so we are all consistant
+           ├── .gitignore          <-- We don't want to share everything with the world
+           └── README.adoc         <-- You are reading it
 ....
 
 == Variables
