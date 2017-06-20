@@ -16,6 +16,15 @@ git submodule init
 git submodule update
 ....
 
+You will also need to install the AWS Command Line Tools for your OS. If you are on Fedora and work with Python virtual environments:
+
+....
+sudo dnf -y install python3-virtualenvwrapper python3-virtualenv python2-virtualenvwrapper python2-virtualenv
+. /usr/bin/virtualenvwrapper.sh
+mkvirtualenv occs-packer
+pip install awscli
+....
+
 == Directory structure
 
 ....
@@ -27,7 +36,7 @@ occs-packer/
            ├── bin/                <-- Misc scripts
            ├── builds/             <-- Repository of build's ( .ami's,.box's and .ova's )
            ├── docs/               <-- Stuff you need to know
-           ├── files/              <-- File to be uploaded to vm (keep destination structure)
+           ├── files/              <-- Files to be uploaded to vm (keep destination structure)
            ├── .git/               <-- Hopefully you know what this is
            ├── http/               <-- Keep kickstart files here
            ├── logs/               <-- Logs from packer-build script
