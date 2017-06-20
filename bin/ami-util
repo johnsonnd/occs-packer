@@ -2,6 +2,7 @@
 import boto3
 import argparse
 import re
+from datetime import datetime
 
 
 def name_matching_iter(image_iter, name_expr):
@@ -13,11 +14,11 @@ def name_matching_iter(image_iter, name_expr):
 def get_images(ec2, owner, builder=None, build=None, release=None, name=None):
     filters = list()
     if builder:
-        filters.append({'Name': 'tag:builder', 'Values': [builder]})
+        filters.append({'Name': 'tag:ami_builder', 'Values': [builder]})
     if build:
-        filters.append({'Name': 'tag:build', 'Values': [build]})
+        filters.append({'Name': 'tag:ami_build', 'Values': [build]})
     if release:
-        filters.append({'Name': 'tag:release', 'Values': [release]})
+        filters.append({'Name': 'tag:ami_release', 'Values': [release]})
 
     image_iter = ec2.images.filter(Owners=[str(owner)], Filters=filters)
     if name is not None:
@@ -28,8 +29,8 @@ def get_images(ec2, owner, builder=None, build=None, release=None, name=None):
 def get_image_timestamp(image):
     if image.tags:
         for tag in image.tags:
-            if tag['Key'] == 'timestamp':
-                return int(tag['Value'])
+            if tag['Key'] == 'ami_build_time':
+                return datetime.strptime(tag['Value'], '%Y-%m-%d-%H-%M')
     return None
 
 
