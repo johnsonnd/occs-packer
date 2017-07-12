@@ -76,6 +76,12 @@
       "direction": "upload"
     },
     {
+      "type": "file",
+      "source": "files/tmp/NessusAgent-6.10.8-es7.x86_64.rpm",
+      "destination": "/tmp/NessusAgent-6.10.8-es7.x86_64.rpm",
+      "direction": "upload"
+    },
+    {
       "type": "ansible-local",
       "playbook_file": "ansible/playbooks/{{ user `playbook` }}.yml",
       "role_paths": [
