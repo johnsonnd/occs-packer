@@ -3,8 +3,8 @@
 set -e
 
 if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
-  echo "Usage: $0 <playbook> [ <template-file> ]" 1>&2
-  exit 1
+    echo "Usage: $0 <playbook> [ <template-file> ]" 1>&2
+    exit 1
 fi
 PLAYBOOK=$1
 
@@ -15,44 +15,44 @@ export AMI_BUILD_TIME
 
 TEMPLATE_FILE="CentOS-7-x86_64-Minimal.vbox.json"
 if [[ $# -eq 2 ]]; then
-  TEMPLATE_FILE=$2
+    TEMPLATE_FILE=$2
 fi
 
 if [[ -f "$TEMPLATE_FILE" ]]; then
-  TEMPLATE_PATH="$TEMPLATE_FILE"
+    TEMPLATE_PATH="$TEMPLATE_FILE"
 elif [[ -f "templates/$TEMPLATE_FILE" ]]; then
-  TEMPLATE_PATH="templates/$TEMPLATE_FILE"
+    TEMPLATE_PATH="templates/$TEMPLATE_FILE"
 else
-  echo "$TEMPLATE_FILE: template file not found" 1>&2
-  exit 1
+    echo "$TEMPLATE_FILE: template file not found" 1>&2
+    exit 1
 fi
 
 case $PLAYBOOK in
-  base) DESCRIPTION="CentOS 7 Base Image"; VMNAME="centos7_base" ;;
-  ruby) DESCRIPTION="CentOS 7 Ruby Image"; VMNAME="centos7_ruby" ;;
-  node) DESCRITION="CentOS 7 Node.js Image"; VMNAME="centos7_node" ;;
-  *) echo "$PLAYBOOK: invalid AMI build" 1>&2; exit 1 ;;
+    base) DESCRIPTION="CentOS 7 Base Image"; VMNAME="centos7_base" ;;
+    ruby) DESCRIPTION="CentOS 7 Ruby Image"; VMNAME="centos7_ruby" ;;
+    node) DESCRITION="CentOS 7 Node.js Image"; VMNAME="centos7_node" ;;
+    *) echo "$PLAYBOOK: invalid AMI build" 1>&2; exit 1 ;;
 esac
 
 rpm_log_previous=$(ls -1 logs/rpm-log-${VMNAME}* | sort -n | tail -n 1)
 
 if [[ -f $HOME/.occs_packer_variables ]]; then
-  . $HOME/.occs_packer_variables
+    . $HOME/.occs_packer_variables
 else
-  echo "" 1>&2
-  echo "Varibles for Packer not set" 1>&2
-  echo "" 1>&2
-  exit 1
+    echo "" 1>&2
+    echo "Varibles for Packer not set" 1>&2
+    echo "" 1>&2
+    exit 1
 fi
 
 if [[ -z "$OCCS_PACKER_ROOT_PASSWORD" ]]; then
-  echo "Specify OCCS_PACKER_ROOT_PASSWORD in \$HOME/.occs_packer_variables" 1>&2
-  exit 1
+    echo "Specify OCCS_PACKER_ROOT_PASSWORD in \$HOME/.occs_packer_variables" 1>&2
+    exit 1
 fi
 
 if [[ -z "$OCCS_PACKER_ANSIBLE_PASSWORD" ]]; then
-  echo "Specify OCCS_PACKER_ANSIBLE_PASSWORD in \$HOME/.occs_packer_variables" 1>&2
-  exit 1
+    echo "Specify OCCS_PACKER_ANSIBLE_PASSWORD in \$HOME/.occs_packer_variables" 1>&2
+    exit 1
 fi
 
 # http/ks.cfg is in .gitignore
@@ -64,16 +64,16 @@ PACKER_LOG=1
 PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}.log"
 
 if [ -f $PACKER_LOG_PATH ]; then
-  PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}-$(date +%S).log"
+    PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}-$(date +%S).log"
 fi
 
 export PACKER_LOG
 export PACKER_LOG_PATH
 
 packer build --on-error=ask \
- -var "vm_name=$VMNAME" \
- -var "playbook=$PLAYBOOK" \
- -var "description=$DESCRIPTION" \
+     -var "vm_name=$VMNAME" \
+     -var "playbook=$PLAYBOOK" \
+     -var "description=$DESCRIPTION" \
  $TEMPLATE_PATH
 
 mkdir -p archive/${VMNAME}
