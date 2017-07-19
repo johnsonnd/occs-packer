@@ -17,6 +17,7 @@ packer_cache/
 .vagrant/
 /files/tmp/*.zip
 /files/tmp/*.tar.gz
+/files/tmp/*.rpm
 /http/ks.cfg
 awscreds.sh
 *.pyc

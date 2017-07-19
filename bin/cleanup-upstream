@@ -1,4 +1,5 @@
 #!/bin/bash
 
-rm -rf files/tmp/*.zip
-rm -rf files/tmp/*.tar.gz
+rm -f files/tmp/*.zip
+rm -f files/tmp/*.tar.gz
+rm -f files/tmp/*.rpm
