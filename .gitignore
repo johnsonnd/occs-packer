@@ -1,6 +1,7 @@
 build*
 inspect*
 validate*
+ansible/roles/ansible*
 bin/virtualbox/
 box/
 builds/
