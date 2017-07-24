@@ -1,0 +1,33 @@
+# This is used to install ansible roles on the guest when building the AMI.
+# ansible role dependencies are expressed as ansible galaxy requirements, installed with:
+#
+# ansible-galaxy install -r requirements.yml
+#
+# All roles should be found within the NLM-OCCS organization.
+# Once we reach production, all roles should use a defined tag (not a branch), as the version.
+---
+- name: occs-nlminit
+  src: https://github.com/NLM-OCCS/ansible-role-nlminit
+  version: origin/master
+- name: occs-awslogs
+  src: https://github.com/NLM-OCCS/ansible-role-awslogs
+  version: origin/master
+- name: occs-aws
+  src: https://github.com/NLM-OCCS/ansible-role-aws
+  version: origin/master
+- name: occs-splunk-forwarder
+  src: https://github.com/NLM-OCCS/ansible-role-splunk-forwarder
+  version: origin/master
+- name: occs-800-53
+  src: https://github.com/NLM-OCCS/ansible-role-800-53
+  version: origin/master
+- name: occs-directories
+  src: https://github.com/NLM-OCCS/ansible-role-directories
+  version: origin/master
+# NOTE: meta/main.yml is empty!
+- name: occs-cloud-init
+  src: https://github.com/NLM-OCCS/ansible-role-cloud-init
+  version: origin/master
+- name: occs-nessus-agent
+  src: https://github.com/NLM-OCCS/ansible-role-nessus-agent
+  version: origin/master

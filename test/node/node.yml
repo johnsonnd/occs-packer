@@ -41,5 +41,5 @@
     - occsab-appadmin
     - occsab-httpd
     - occsab-node
-    - ansible-awslogs
-    - splunk-forwarder
+    - occs-awslogs
+    - occs-splunk-forwarder
