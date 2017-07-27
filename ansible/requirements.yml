@@ -1,0 +1,61 @@
+---
+# This is used to install ansible roles on the guest when building the AMI.
+# ansible role dependencies are expressed as ansible galaxy requirements, installed with:
+#
+# ansible-galaxy install -r requirements.yml
+#
+# All roles should be found within the NLM-OCCS organization.
+# Once we reach production, all roles should use a defined tag (not a branch), as the version.
+
+- name: occs-nlminit
+  src: https://github.com/NLM-OCCS/ansible-role-nlminit
+  version: master
+
+- name: occs-awslogs
+  src: https://github.com/NLM-OCCS/ansible-role-awslogs
+  version: master
+
+- name: occs-aws
+  src: https://github.com/NLM-OCCS/ansible-role-aws
+  version: master
+
+- name: occs-splunk-forwarder
+  src: https://github.com/NLM-OCCS/ansible-role-splunk-forwarder
+  version: master
+
+- name: occs-800-53
+  src: https://github.com/NLM-OCCS/ansible-role-800-53
+  version: master
+
+- name: occs-directories
+  src: https://github.com/NLM-OCCS/ansible-role-directories
+  version: master
+
+# NOTE: meta/main.yml is empty!
+- name: occs-cloud-init
+  src: https://github.com/NLM-OCCS/ansible-role-cloud-init
+  version: master
+
+- name: occs-nessus-agent
+  src: https://github.com/NLM-OCCS/ansible-role-nessus-agent
+  version: master
+
+- name: occsab-appadmin
+  src: https://github.com/NLM-OCCS/occsab-appadmin
+  version: master
+
+- name: occsab-httpd
+  src: https://github.com/NLM-OCCS/occsab-appadmin
+  version: master
+
+- name: occsab-node
+  src: https://github.com/NLM-OCCS/occsab-node
+  version: master
+
+- name: occsab-passenger
+  src: https://github.com/NLM-OCCS/occsab-passenger
+  version: master
+
+- name: occsab-ruby
+  src: https://github.com/NLM-OCCS/occsab-ruby
+  version: master

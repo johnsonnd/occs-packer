@@ -24,6 +24,7 @@
     "password": "{{ env `OCCS_PACKER_ROOT_PASSWORD` }}",
     "user": "root",
     "version": "7.3",
+    "nessus_agent_version": "6.10.8",
     "ami_build_time": "{{ env `AMI_BUILD_TIME` }}"
    },
 
@@ -77,26 +78,21 @@
     },
     {
       "type": "file",
-      "source": "files/tmp/NessusAgent-6.10.8-es7.x86_64.rpm",
-      "destination": "/tmp/NessusAgent-6.10.8-es7.x86_64.rpm",
+      "source": "files/tmp/NessusAgent-{{ user `nessus_agent_version` }}-es7.x86_64.rpm",
+      "destination": "/tmp/NessusAgent-{{ user `nessus_agent_version` }}-es7.x86_64.rpm",
       "direction": "upload"
+    },
+    {
+      "type": "shell",
+      "remote_folder": "/tmp",
+      "inline": [
+        "yum -y install /tmp/NessusAgent-{{ user `nessus_agent_version` }}-es7.x86_64.rpm"
+      ]
     },
     {
       "type": "ansible-local",
       "playbook_file": "ansible/playbooks/{{ user `playbook` }}.yml",
-      "role_paths": [
-        "ansible/roles/ansible-cloud-init",
-        "ansible/roles/ansible-directories",
-        "ansible/roles/ansible-aws",
-        "ansible/roles/ansible-awslogs",
-        "ansible/roles/ansible-800-53",
-        "ansible/roles/occsab-httpd",
-        "ansible/roles/occsab-passenger",
-        "ansible/roles/occsab-ruby",
-        "ansible/roles/occsab-node",
-        "ansible/roles/occsab-appadmin",
-        "ansible/roles/splunk-forwarder"
-      ]
+      "galaxy_file": "ansible/requirements.yml"
     },
     {
       "type": "shell",

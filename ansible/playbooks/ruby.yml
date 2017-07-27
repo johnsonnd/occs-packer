@@ -41,15 +41,15 @@
 
   roles:
     # Other roles could depend on this role. Keep it first.
-    - { role: ansible-directories,            tags: directories }
-    - { role: ansible-cloud-init,             tags: cloud-init }
+    - { role: occs-directories,            tags: directories }
+    - { role: occs-cloud-init,             tags: cloud-init }
     # https://github.com/RedHatGov/ansible-role-800-53, forked and modified for CentOS
     # Keep this role second. It does *a lot* and we don't want it to overwrite our changes
-    - { role: ansible-800-53,                 tags: 800-53 }
-    - { role: ansible-aws,                    tags: aws }
-    - { role: ansible-awslogs,                tags: awslogs }
+    - { role: occs-800-53,                 tags: 800-53 }
+    - { role: occs-aws,                    tags: aws }
+    - { role: occs-awslogs,                tags: awslogs }
     # Commented out - we will try a different way
-    # - { role: splunk-forwarder,               tags: splunkforwarder }
+    # - { role: occs-splunk-forwarder,               tags: splunkforwarder }
     # Put all other roles after this line
     - occsab-httpd
     - occsab-passenger
