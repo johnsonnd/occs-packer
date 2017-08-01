@@ -31,7 +31,6 @@
   src: https://github.com/NLM-OCCS/ansible-role-directories
   version: master
 
-# NOTE: meta/main.yml is empty!
 - name: occs-cloud-init
   src: https://github.com/NLM-OCCS/ansible-role-cloud-init
   version: master

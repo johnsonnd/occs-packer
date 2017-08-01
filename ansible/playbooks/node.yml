@@ -5,12 +5,11 @@
   #  remote_user: ansible
 
   vars:
-    nodejs_version: "6.10.0"
+    nodejs_install_dir: /usr/nlm
+    nodejs_version: "6.11.1"
+
     appadmin_include_node: yes
     appadmin_node_path: /usr/nlm/node/bin
-
-    nodejs_install_dir: /usr/nlm
-    nodejs_version: "7.10.1"
 
     awslogs_region: us-east-1
     awslogs_logs:
@@ -18,64 +17,64 @@
        format: "%d/%b/%Y:%H:%M:%S %z"
        time_zone: "UTC"
        initial_position: "end_of_file"
-       group_name: NLM-INT-httpd-access-log
-       stream_name: '{hostname}-{instance-id}-access'
+       group_name: 'httpd-access-log'
+       stream_name: '{instance_id}-access'
 
      - file: /var/log/httpd/error_log
        format: "%d %b %y %H:%M:%S.%f"
        time_zone: "UTC"
        initial_position: "end_of_file"
-       group_name: NLM-INT-httpd-access-log
-       stream_name: '{hostname}-{instance-id}-error'
+       group_name: 'httpd-access-log'
+       stream_name: '{instance_id}-error'
 
      - file: /var/log/messages
        format: "%b %d %H:%M:%S"
        time_zone: "LOCAL"
        initial_position: "start_of_file"
-       group_name: NLM-INT-var-log-messages
-       stream_name: '{hostname}-{instance-id}'
+       group_name: 'var-log-messages'
+       stream_name: '{instance_id}'
 
      - file: /var/log/secure
        format: "%b %d %H:%M:%S"
        time_zone: "LOCAL"
        initial_position: "start_of_file"
-       group_name: NLM-INT-var-log-secure
-       stream_name: '{hostname}-{instance-id}'
+       group_name: 'var-log-secure'
+       stream_name: '{instance_id}'
 
      - file: /var/log/audit/audit.log
        format: "%b %d %H:%M:%S"
        time_zone: "LOCAL"
        initial_position: "start_of_file"
-       group_name: NLM-INT-var-log-audit
-       stream_name: '{hostname}-{instance-id}'
+       group_name: 'var-log-audit'
+       stream_name: '{instance_id}'
 
      - file: /var/log/cloud-init.log
        format: "%Y-%m-%d %H:%M:%S"
        time_zone: "LOCAL"
        initial_position: "start_of_file"
-       group_name: NLM-INT-instance-bootstrap-log
-       stream_name: '{hostname}-{instance-id}-cloud-init'
+       group_name: 'instance-bootstrap-log'
+       stream_name: '{instance_id}-cloud-init'
 
-     - file: /var/log/cfn-init.log
+     - file: /var/log/cfn-init-cmd.log
        format: "%Y-%m-%d %H:%M:%S"
        time_zone: "LOCAL"
        initial_position: "start_of_file"
-       group_name: NLM-INT-instance-bootstrap-log
-       stream_name: '{hostname}-{instance-id}-cfn-init'
+       group_name: 'instance-bootstrap-log'
+       stream_name: '{instance_id}-cfn-init-cmd'
 
      - file: /var/log/cfn-hup.log
        format: "%Y-%m-%d %H:%M:%S"
        time_zone: "LOCAL"
        initial_position: "start_of_file"
-       group_name: NLM-INT-instance-bootstrap-log
-       stream_name: '{hostname}-{instance-id}-cfn-hup'
+       group_name: 'instance-bootstrap-log'
+       stream_name: '{instance_id}-cfn-hup'
 
      - file: /var/log/cfn-wire.log
        format: "%Y-%m-%d %H:%M:%S"
        time_zone: "LOCAL"
        initial_position: "start_of_file"
-       group_name: NLM-INT-instance-bootstrap-log
-       stream_name: '{hostname}-{instance-id}-cfn-wire'
+       group_name: 'instance-bootstrap-log'
+       stream_name: '{instance_id}-cfn-wire'
 
   roles:
     # Other roles could depend on this role. Keep it first.
