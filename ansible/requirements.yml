@@ -13,7 +13,7 @@
 
 - name: occs-awslogs
   src: https://github.com/NLM-OCCS/ansible-role-awslogs
-  version: master
+  version: '0.9'
 
 - name: occs-aws
   src: https://github.com/NLM-OCCS/ansible-role-aws
