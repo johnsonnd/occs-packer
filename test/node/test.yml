@@ -1,0 +1,37 @@
+# Integration test of node AMI
+---
+- hosts: localhost
+  gather_facts: true
+
+  tasks:
+    - stat:
+        path: /var/awslogs/etc/aws.conf
+      register: _conf
+
+    - stat:
+        path: /var/awslogs/etc/awslogs.conf
+      register: _logsconf
+
+    - name: aws.conf exists
+      assert:
+        that: _conf.stat.exists == true
+
+    - name: awslogs.conf exists
+      assert:
+        that: _logsconf.stat.exists == true
+
+    - stat:
+        path: /etc/httpd/conf/httpd.conf
+      register: _httpd_conf
+
+    - package:
+        name: httpd
+        state: present
+      check_mode: yes
+      register: _have_httpd
+
+    - name: httpd rpm is installed
+      assert:
+        that:
+          - _httpd_conf.stat.exists == true
+          - _have_httpd
