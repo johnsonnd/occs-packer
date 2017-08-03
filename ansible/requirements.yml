@@ -7,9 +7,10 @@
 # All roles should be found within the NLM-OCCS organization.
 # Once we reach production, all roles should use a defined tag (not a branch), as the version.
 
-- name: occs-nlminit
-  src: https://github.com/NLM-OCCS/ansible-role-nlminit
-  version: master
+# TODO: Not remotely baked
+#- name: occs-nlminit
+#  src: https://github.com/NLM-OCCS/ansible-role-nlminit
+#  version: master
 
 - name: occs-awslogs
   src: https://github.com/NLM-OCCS/ansible-role-awslogs

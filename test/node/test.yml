@@ -4,34 +4,47 @@
   gather_facts: true
 
   tasks:
+    # occs-awslogs ran
     - stat:
         path: /var/awslogs/etc/aws.conf
-      register: _conf
+      register: conf
 
     - stat:
         path: /var/awslogs/etc/awslogs.conf
-      register: _logsconf
+      register: logsconf
 
     - name: aws.conf exists
       assert:
-        that: _conf.stat.exists == true
+        that: conf.stat.exists == true
 
     - name: awslogs.conf exists
       assert:
-        that: _logsconf.stat.exists == true
+        that: logsconf.stat.exists == true
 
+    # occsab-httpd ran
     - stat:
         path: /etc/httpd/conf/httpd.conf
-      register: _httpd_conf
-
-    - package:
-        name: httpd
-        state: present
-      check_mode: yes
-      register: _have_httpd
+      register: httpd_conf
 
     - name: httpd rpm is installed
       assert:
-        that:
-          - _httpd_conf.stat.exists == true
-          - _have_httpd
+        that: httpd_conf.stat.exists == true
+
+    # occsab-node ran
+    - stat:
+        path: /usr/nlm/node/bin/node
+      register: node_bin
+
+    - name: node is installed
+      assert:
+        that: node_bin.stat.exists == true
+
+    # occsab-appadmin ran
+    - stat:
+        path: /usr/nlm/apps/.bash_profile
+      register: appadmin_profile
+
+    - name: appadmin user is pressent
+      assert:
+        that: appadmin_profile.stat.exists == true
+
