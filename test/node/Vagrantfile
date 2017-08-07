@@ -62,7 +62,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |vb|
      # Set the name of the box
-     vb.name = "centos7_test_packer"
+     vb.name = "centos7_test_node_ami"
 
      # Don't display the VirtualBox GUI when booting the machine
      vb.gui = false
@@ -81,12 +81,19 @@ Vagrant.configure("2") do |config|
   # Override the /vagrant mount
   config.vm.synced_folder "../../", "/vagrant", disabled: false
 
-  config.vm.provision "file", source: "../../files/tmp/requirements.yml", destination: "/tmp/requirements.yml" 
-  config.vm.provision "shell", inline: "yum -y install ansible"
-  config.vm.provision "shell", inline: "ansible-galaxy install -r /tmp/requirements.yml"
+  config.vm.provision "shell", inline: "sudo yum -y install ansible"
+  config.vm.provision "shell", inline: "sudo ansible-galaxy install -r /vagrant/ansible/requirements.yml"
 
+  # Apply the same playbook used when building the AMI
   config.vm.provision "ansible_local" do |ansible|
-    ansible.playbook = "test/node/node.yml"
+    ansible.playbook = "ansible/playbooks/node.yml"
+    ansible.raw_arguments = [ '--become' ]
+  end
+
+  # Run some integration tests to make sure things took
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.playbook = "test/node/test.yml"
+    ansible.raw_arguments = [ '--check' ]
   end
 
 end

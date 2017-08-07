@@ -7,13 +7,14 @@
 # All roles should be found within the NLM-OCCS organization.
 # Once we reach production, all roles should use a defined tag (not a branch), as the version.
 
-- name: occs-nlminit
-  src: https://github.com/NLM-OCCS/ansible-role-nlminit
-  version: master
+# TODO: Not remotely baked
+#- name: occs-nlminit
+#  src: https://github.com/NLM-OCCS/ansible-role-nlminit
+#  version: master
 
 - name: occs-awslogs
   src: https://github.com/NLM-OCCS/ansible-role-awslogs
-  version: master
+  version: '1.0'
 
 - name: occs-aws
   src: https://github.com/NLM-OCCS/ansible-role-aws
@@ -31,7 +32,6 @@
   src: https://github.com/NLM-OCCS/ansible-role-directories
   version: master
 
-# NOTE: meta/main.yml is empty!
 - name: occs-cloud-init
   src: https://github.com/NLM-OCCS/ansible-role-cloud-init
   version: master
@@ -45,7 +45,7 @@
   version: master
 
 - name: occsab-httpd
-  src: https://github.com/NLM-OCCS/occsab-appadmin
+  src: https://github.com/NLM-OCCS/occsab-httpd
   version: master
 
 - name: occsab-node

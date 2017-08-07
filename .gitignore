@@ -20,5 +20,6 @@ packer_cache/
 /files/tmp/*.rpm
 /http/ks.cfg
 awscreds.sh
+*.retry
 *.pyc
 *.pyo

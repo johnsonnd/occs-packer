@@ -5,13 +5,27 @@ CLOUDWATCH_FILE=CloudWatchMonitoringScripts-1.2.1.zip
 CLOUDWATCH_URL=http://aws-cloudwatch.s3.amazonaws.com/downloads/${CLOUDWATCH_FILE}
 CLOUDWATCH_MD5=${CLOUDWATCH_FILE}.md5
 
+NESSUS_VERSION=6.10.8
+NESSUS_RPM=NessusAgent-${NESSUS_VERSION}-es7.x86_64.rpm
+
 mkdir -p files/tmp
 
-if [[ -f files/tmp/${CLOUDWATCH_FILE} ]]; then
+if [[ -f "files/tmp/${CLOUDWATCH_FILE}" ]]; then
     echo "File files/tmp/${CLOUDWATCH_FILE} already present" 1>&2
 else
     echo "Downloading $CLOUDWATCH_URL ..." 1>&2
     curl -L -o files/tmp/${CLOUDWATCH_FILE} ${CLOUDWATCH_URL}
     md5sum --check files/tmp/${CLOUDWATCH_MD5}
+fi
+
+if [[ -f "files/tmp/${NESSUS_RPM}" ]]; then
+    echo "File files/tmp/${NESSUS_RPM} already present" 1>&2
+elif [[ -d /s/Tenable ]]; then
+    # NOTE: This only works on Windows (Git Bash)
+    echo "Copying $NESSUS_RPM ..." 1>&2
+    cp /s/Tenable/${NESSUS_RPM} files/tmp
+else
+    echo "$NESSUS_RPM is present in S:\\Tenable on Windows" 1>&2
+    exit 1
 fi
 
