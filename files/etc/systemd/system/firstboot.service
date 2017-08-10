@@ -1,0 +1,10 @@
+[Unit]
+Description=Finish Boostrapping Nessus Agent
+After=salt-master.service
+
+[Service]
+Type=oneshot
+ExecStart=/root/firstboot
+
+[Install]
+WantedBy=multi-user.target

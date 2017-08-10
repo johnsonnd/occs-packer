@@ -1,0 +1,25 @@
+#!/bin/bash
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export PATH
+
+agent_key={{OCCS_NESSUS_AGENT_KEY}}
+nessus_host={{OCCS_NESSUS_HOST}}
+nessus_group=AWS_OCCS
+
+/opt/nessus_agent/sbin/nessuscli agent link --key=${agent_key} --host=${nessus_host} --port=443 --groups=${nessus_group}
+
+sleep 10
+
+systemctl enable nessusagent
+systemctl start nessusagent
+
+systemctl disable firstboot
+
+rm -f /etc/systemd/system/firstboot.service
+rm -f /root/firstboot
+FIRSTBOOT
+
+chmod 700 /root/firstboot
+
+systemctl enable firstboot

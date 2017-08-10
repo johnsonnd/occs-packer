@@ -19,6 +19,7 @@ packer_cache/
 /files/tmp/*.tar.gz
 /files/tmp/*.rpm
 /http/ks.cfg
+/files/root/firstboot.sh
 awscreds.sh
 *.retry
 *.pyc

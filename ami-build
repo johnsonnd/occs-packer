@@ -60,6 +60,10 @@ sed -e "s/{{OCCS_PACKER_ROOT_PASSWORD}}/$OCCS_PACKER_ROOT_PASSWORD/g" http/ks.cf
 sed -i "s/{{OCCS_PACKER_ANSIBLE_PASSWORD}}/$OCCS_PACKER_ANSIBLE_PASSWORD/g" http/ks.cfg
 # sed -i "s/{{OCCS_ANSIBLE_PUB_KEY}}/$OCCS_ANSIBLE_PUB_KEY/g" http/ks.cfg
 
+# private nessus information
+sed -e "s/{{OCCS_NESSUS_AGENT_KEY}}/$OCCS_NESSUS_AGENT_KEY/g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh
+sed -i "s/{{OCCS_NESSUS_HOST}}/$OCCS_NESSUS_HOST/g" files/root/firstboot.sh
+
 PACKER_LOG=1
 PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}.log"
 
