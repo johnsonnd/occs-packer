@@ -78,6 +78,17 @@
     },
     {
       "type": "file",
+      "source": "files/etc/systemd/system/firstboot.service",
+      "destination": "/etc/systemd/system/firstboot.service",
+      "direction": "upload"
+    },
+    {
+      "type": "file",
+      "source": "files/root/firstboot.sh",
+      "destination": "/root/firstboot.sh"
+    },
+    {
+      "type": "file",
       "source": "files/tmp/NessusAgent-{{ user `nessus_agent_version` }}-es7.x86_64.rpm",
       "destination": "/tmp/NessusAgent-{{ user `nessus_agent_version` }}-es7.x86_64.rpm",
       "direction": "upload"
