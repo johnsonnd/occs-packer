@@ -65,5 +65,6 @@
     # Put all other roles after this line
     - { role: occs-aws,                       tags: aws }
     - { role: occs-awslogs,                   tags: awslogs }
+    - { role: occs-chrony,                    tags: chrony}
     # Commented out - we will try a different way
     # - { role: splunk-forwarder,               tags: splunkforwarder }

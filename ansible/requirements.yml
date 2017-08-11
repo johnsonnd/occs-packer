@@ -40,6 +40,10 @@
   src: https://github.com/NLM-OCCS/ansible-role-nessus-agent
   version: master
 
+- name: occs-chrony
+  src: https://github.com/nocbotio/nocbot.chrony
+  version: master
+
 - name: occsab-appadmin
   src: https://github.com/NLM-OCCS/occsab-appadmin
   version: master
