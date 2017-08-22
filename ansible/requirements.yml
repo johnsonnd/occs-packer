@@ -20,6 +20,10 @@
   src: https://github.com/NLM-OCCS/ansible-role-aws
   version: master
 
+- name: occs-ec2
+  src: https://github.com/nocbotio/nocbot.ec2
+  version: master
+
 - name: occs-splunk-forwarder
   src: https://github.com/NLM-OCCS/ansible-role-splunk-forwarder
   version: master
