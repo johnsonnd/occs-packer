@@ -85,6 +85,8 @@
     - { role: occs-800-53,                 tags: 800-53 }
     - { role: occs-aws,                    tags: aws }
     - { role: occs-awslogs,                tags: awslogs }
+    - { role: occs-chrony,                 tags: chrony }
+    - { role: occs-ec2,                    tags: ec2 }
     # Commented out - we will try a different way
     # - { role: occs-splunk-forwarder,               tags: splunkforwarder }
     # Put all other roles after this line
