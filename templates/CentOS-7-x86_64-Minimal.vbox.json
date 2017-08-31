@@ -4,7 +4,7 @@
   "variables": {
     "aws_access_key": "{{ env `OCCS_PACKER_AWS_ACCESS_KEY` }}",
     "aws_secret_key": "{{ env `OCCS_PACKER_AWS_SECRET_KEY` }}",
-    "aws_s3_bucket_name": "occs-ami-importbucket",
+    "aws_s3_bucket_name": "nlm-occs-ami-import",
     "boot_wait": "5s",
     "headless": "{{ env `OCCS_PACKER_HEADLESS` }}",
     "http_directory": "http",
@@ -66,6 +66,7 @@
       "type": "shell",
       "remote_folder": "/root",
       "inline": [
+        "yum -y upgrade",
         "yum -y install ansible haveged",
         "sed -i '/^UUID/d' /etc/sysconfig/network-scripts/ifcfg-enp0s3"
       ]
@@ -149,6 +150,10 @@
          "ami_lsb_distributor": "CentOS",
          "ami_lsb_release": "{{ user `lsb_release` }}"
        }
+     },
+     {
+       "type": "manifest",
+       "output": "logs/manifest-{{ user `vm_name` }}-{{ user `ami_build_time` }}.log"
      }
    ]
 }
