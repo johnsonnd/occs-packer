@@ -6,10 +6,16 @@ if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
     echo "Usage: $0 <playbook> [ <template-file> ]" 1>&2
     exit 1
 fi
+
+## Trap signals and clean out build dir.
+[[ $0 =~ ^[.][/] ]] && BUILDDIR=$(pwd)/build || BUILDDIR=$(/bin/dirname ${0})/build
+trap '/bin/rm -rf ${BUILDDIR}/*' 0 1 2 3 15
+
 PLAYBOOK=$1
 
 AMI_BUILD_TIME="$(date +%F-%H-%M)"
 AMI_CHANGELOG_BUCKET="occs-ami-importbucket"
+PACKER_TEE=/tmp/packer_tee_out.$$
 
 export AMI_BUILD_TIME
 
@@ -34,7 +40,7 @@ case $PLAYBOOK in
     *) echo "$PLAYBOOK: invalid AMI build" 1>&2; exit 1 ;;
 esac
 
-rpm_log_previous=$(ls -1 logs/rpm-log-${VMNAME}* | sort -n | tail -n 1)
+rpm_log_previous=$(ls -1 logs/rpm-log-${VMNAME}* 2>/dev/null| sort -n | tail -n 1)
 
 if [[ -f $HOME/.occs_packer_variables ]]; then
     . $HOME/.occs_packer_variables
@@ -78,14 +84,25 @@ packer build --on-error=ask \
      -var "vm_name=$VMNAME" \
      -var "playbook=$PLAYBOOK" \
      -var "description=$DESCRIPTION" \
- $TEMPLATE_PATH
+ $TEMPLATE_PATH | tee ${PACKER_TEE}
+
+echo "--- This is packer-tee ------------"
+cat ${PACKER_TEE}
+echo "--- This is packer-tee ------------"
+
+# Grab AMI id and put into variable.
+read AMI_ID < <(awk -F: '/ami-/{print $2}' ${PACKER_TEE} && [ -f ${PACKER_TEE} ] && rm -rf ${PACKER_TEE})
+
+echo =====================
+echo "AMI_ID :: ${AMI_ID}"
+echo =====================
 
 mkdir -p archive/${VMNAME}
 mv builds/${VMNAME}/* archive/${VMNAME}/
 
 rm -rf builds/${VMNAME}
 
-rpm_log_current=$(ls -1 logs/rpm-log-${VMNAME}* | sort -n | tail -n 1)
+rpm_log_current=$(ls -1 logs/rpm-log-${VMNAME}* 2>/dev/null| sort -n | tail -n 1)
 
 sdiff -s $rpm_log_previous $rpm_log_current || true > logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
 
@@ -98,5 +115,7 @@ aws s3 cp ${rpm_log_current} s3://${AMI_CHANGELOG_BUCKET}/
 
 # Upload diff of RPM Log as RPM Changelog
 aws s3 cp logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt s3://${AMI_CHANGELOG_BUCKET}/
+
+echo "aws sns --topic-arn "" --subject "${AMI_ID}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt --topic-arn"
 
 exit $?
