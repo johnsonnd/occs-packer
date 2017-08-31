@@ -14,7 +14,7 @@ trap '/bin/rm -rf ${BUILDDIR}/*' 0 1 2 3 15
 PLAYBOOK=$1
 
 AMI_BUILD_TIME="$(date +%F-%H-%M)"
-AMI_CHANGELOG_BUCKET="occs-ami-importbucket"
+AMI_CHANGELOG_BUCKET="nlm-ami-import-logs"
 PACKER_TEE=/tmp/packer_tee_out.$$
 
 export AMI_BUILD_TIME
@@ -86,15 +86,13 @@ packer build --on-error=ask \
      -var "description=$DESCRIPTION" \
  $TEMPLATE_PATH | tee ${PACKER_TEE}
 
-echo "--- This is packer-tee ------------"
-cat ${PACKER_TEE}
-echo "--- This is packer-tee ------------"
-
 # Grab AMI id and put into variable.
-read AMI_ID < <(awk -F: '/ami-/{print $2}' ${PACKER_TEE} && [ -f ${PACKER_TEE} ] && rm -rf ${PACKER_TEE})
+read REGION_ID AMI_ID < <(awk -F: '/: ami-/{print $1,$2}' ${PACKER_TEE})
+# read REGION_ID AMI_ID < <(awk -F: '/: ami-/{print $1,$2}' ${PACKER_TEE} && [ -f ${PACKER_TEE} ] && rm -rf ${PACKER_TEE})
 
 echo =====================
 echo "AMI_ID :: ${AMI_ID}"
+echo "REGION_ID :: ${REGION_ID}"
 echo =====================
 
 mkdir -p archive/${VMNAME}
@@ -116,6 +114,6 @@ aws s3 cp ${rpm_log_current} s3://${AMI_CHANGELOG_BUCKET}/
 # Upload diff of RPM Log as RPM Changelog
 aws s3 cp logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt s3://${AMI_CHANGELOG_BUCKET}/
 
-echo "aws sns --topic-arn "" --subject "${AMI_ID}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt --topic-arn"
+echo "aws sns --topic-arn "arn:aws:sns:us-east-1:765460880451:nlm-sec-ami-import" --subject "${REGION_ID}: ${AMI_ID}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt --topic-arn"
 
 exit $?
