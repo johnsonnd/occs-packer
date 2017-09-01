@@ -66,7 +66,6 @@
       "type": "shell",
       "remote_folder": "/root",
       "inline": [
-        "yum -y upgrade",
         "yum -y install ansible haveged",
         "sed -i '/^UUID/d' /etc/sysconfig/network-scripts/ifcfg-enp0s3"
       ]
@@ -146,14 +145,11 @@
          "ami_builder": "packer",
          "ami_build": "{{ user `playbook` }}",
          "ami_description": "{{ user `description` }}",
+         "ami_status": "candidate",
          "ami_build_time": "{{ user `ami_build_time` }}",
          "ami_lsb_distributor": "CentOS",
          "ami_lsb_release": "{{ user `lsb_release` }}"
        }
-     },
-     {
-       "type": "manifest",
-       "output": "logs/manifest-{{ user `vm_name` }}-{{ user `ami_build_time` }}.log"
      }
    ]
 }
