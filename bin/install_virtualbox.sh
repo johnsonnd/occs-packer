@@ -9,7 +9,8 @@ abspath="$(cd ${0%/*} 2>/dev/null; echo $PWD/${0##*/})"
 export install_dir=`dirname $abspath`
 
 lsb_distributor=$(lsb_release -i | awk '{print $3}' | tr '[:upper:]' '[:lower:]')
-lsb_release=$(lsb_release -a | grep Release | awk '{print $2}' | cut -d \. -f 1)
+# lsb_release=$(lsb_release -a | grep Release | awk '{print $2}' | cut -d \. -f 1)
+lsb_release=25
 
 download_url='http://download.virtualbox.org/virtualbox'
 

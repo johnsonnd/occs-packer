@@ -4,7 +4,7 @@
   "variables": {
     "aws_access_key": "{{ env `OCCS_PACKER_AWS_ACCESS_KEY` }}",
     "aws_secret_key": "{{ env `OCCS_PACKER_AWS_SECRET_KEY` }}",
-    "aws_s3_bucket_name": "occs-ami-importbucket",
+    "aws_s3_bucket_name": "nlm-occs-ami-import",
     "boot_wait": "5s",
     "headless": "{{ env `OCCS_PACKER_HEADLESS` }}",
     "http_directory": "http",
@@ -145,6 +145,7 @@
          "ami_builder": "packer",
          "ami_build": "{{ user `playbook` }}",
          "ami_description": "{{ user `description` }}",
+         "ami_status": "candidate",
          "ami_build_time": "{{ user `ami_build_time` }}",
          "ami_lsb_distributor": "CentOS",
          "ami_lsb_release": "{{ user `lsb_release` }}"
