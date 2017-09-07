@@ -46,15 +46,16 @@ rootpw --plaintext "{{OCCS_PACKER_ROOT_PASSWORD}}"
 skipx
 
 # System timezone
-timezone UTC
+timezone America/New_York
+# timezone UTC --isUtc
 
 # ignoredisk --only-use=vda
 # System bootloader configuration
 bootloader --append=" crashkernel=auto" --location=mbr
 
 selinux --enforcing
-services --disabled="kdump" --enabled="network,sshd,rsyslog,chronyd"
-timezone UTC --isUtc
+services --disabled="kdump" --enabled="haveged,network,sshd,rsyslog,chronyd"
+
 # Disk
 # bootloader --append="console=tty0" --location=mbr --timeout=1 --boot-drive=vda
 bootloader --append="console=tty0" --location=mbr --timeout=1
@@ -210,13 +211,14 @@ chrony
 clamav
 clamav-scanner
 # cloud-init
-cloud-utils-growpart
+# cloud-utils-growpart
 dracut-config-generic
 dracut-norescue
 epel-release
 firewalld
 git
 grub2
+haveged
 kernel
 libselinux-python
 mdadm
