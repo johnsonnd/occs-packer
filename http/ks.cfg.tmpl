@@ -46,8 +46,8 @@ rootpw --plaintext "{{OCCS_PACKER_ROOT_PASSWORD}}"
 skipx
 
 # System timezone
-timezone America/New_York
-# timezone UTC --isUtc
+# timezone America/New_York
+timezone UTC --isUtc
 
 # ignoredisk --only-use=vda
 # System bootloader configuration
@@ -211,7 +211,7 @@ chrony
 clamav
 clamav-scanner
 # cloud-init
-# cloud-utils-growpart
+cloud-utils-growpart
 dracut-config-generic
 dracut-norescue
 epel-release
