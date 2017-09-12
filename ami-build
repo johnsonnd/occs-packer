@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -13,8 +13,9 @@ trap '/bin/rm -rf ${BUILDDIR}/*' 0 1 2 3 15
 
 PLAYBOOK=$1
 
+AMI_REGION="us-east-1"
 AMI_BUILD_TIME="$(date +%F-%H-%M)"
-AMI_CHANGELOG_BUCKET="nlm-ami-import-logs"
+AMI_CHANGELOG_BUCKET="nlm-ami-import-logs-${AMI_REGION}"
 PACKER_TEE=/tmp/packer_tee_out.$$
 
 export AMI_BUILD_TIME
@@ -62,13 +63,17 @@ if [[ -z "$OCCS_PACKER_ANSIBLE_PASSWORD" ]]; then
 fi
 
 # http/ks.cfg is in .gitignore
-sed -e "s/{{OCCS_PACKER_ROOT_PASSWORD}}/$OCCS_PACKER_ROOT_PASSWORD/g" http/ks.cfg.tmpl > http/ks.cfg
-sed -i "s/{{OCCS_PACKER_ANSIBLE_PASSWORD}}/$OCCS_PACKER_ANSIBLE_PASSWORD/g" http/ks.cfg
-# sed -i "s/{{OCCS_ANSIBLE_PUB_KEY}}/$OCCS_ANSIBLE_PUB_KEY/g" http/ks.cfg
+sed -i '.bak' -e "s/{{OCCS_PACKER_ANSIBLE_PASSWORD}}/$OCCS_PACKER_ANSIBLE_PASSWORD/g;s/{{OCCS_ANSIBLE_PUB_KEY}}/$OCCS_ANSIBLE_PUB_KEY/g" http/ks.cfg 
+
+#sed  "s/{{OCCS_ANSIBLE_PUB_KEY}}/$OCCS_ANSIBLE_PUB_KEY/g" http/ks.cfg
+#sed -e 's/[{]*OCCS_PACKER_ROOT_PASSWORD[}]*/'"${OCCS_PACKER_ROOT_PASSWORD}"'/g' http/ks.cfg.tmpl > http/ks.cfg
+#sed -i 's/[{]*OCCS_PACKER_ANSIBLE_PASSWORD[}]*/'"${OCCS_PACKER_ANSIBLE_PASSWORD}"'/g' http/ks.cfg
 
 # private nessus information
-sed -e "s/{{OCCS_NESSUS_AGENT_KEY}}/$OCCS_NESSUS_AGENT_KEY/g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh
-sed -i "s/{{OCCS_NESSUS_HOST}}/$OCCS_NESSUS_HOST/g" files/root/firstboot.sh
+sed -i '.bak' -e "s/{{OCCS_NESSUS_AGENT_KEY}}/$OCCS_NESSUS_AGENT_KEY/g;s/{{OCCS_NESSUS_HOST}}/$OCCS_NESSUS_HOST/g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh 
+#sed -i'' "s/{{OCCS_NESSUS_HOST}}/$OCCS_NESSUS_HOST/g" files/root/firstboot.sh
+#sed -e 's/[{]*OCCS_NESSUS_AGENT_KEY[}]*/'"${OCCS_NESSUS_AGENT_KEY}"'/g' files/root/firstboot.sh.tmpl > files/root/firstboot.sh
+#sed -i 's/[{]*OCCS_NESSUS_HOST[}]*/'"${OCCS_NESSUS_HOST}"'/g' files/root/firstboot.sh
 
 PACKER_LOG=1
 PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}.log"
@@ -86,14 +91,8 @@ packer build --on-error=ask \
      -var "description=$DESCRIPTION" \
  $TEMPLATE_PATH | tee ${PACKER_TEE}
 
-# Grab AMI id and put into variable.
-read REGION_ID AMI_ID < <(awk -F: '/: ami-/{print $1,$2}' ${PACKER_TEE})
-# read REGION_ID AMI_ID < <(awk -F: '/: ami-/{print $1,$2}' ${PACKER_TEE} && [ -f ${PACKER_TEE} ] && rm -rf ${PACKER_TEE})
-
-echo =====================
-echo "AMI_ID :: ${AMI_ID}"
-echo "REGION_ID :: ${REGION_ID}"
-echo =====================
+#read REGION_ID AMI_ID < <(awk -F: '/: ami-/{print $1,$2}' ${PACKER_TEE})
+read REGION_ID AMI_ID < <(awk -F: '/: ami-/{print $1,$2}' ${PACKER_TEE} && [ -f ${PACKER_TEE} ] && rm -rf ${PACKER_TEE})
 
 mkdir -p archive/${VMNAME}
 mv builds/${VMNAME}/* archive/${VMNAME}/
