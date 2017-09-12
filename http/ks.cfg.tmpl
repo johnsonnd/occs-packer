@@ -23,6 +23,9 @@ repo --name centos_updates --mirrorlist="http://mirrorlist.centos.org/?release=7
 # Use EPEL to install extra software
 repo --name centos_epel --mirrorlist="https://mirrors.fedoraproject.org/mirrorlist?repo=epel-7&arch=x86_64" --cost="200"
 
+# Use CR repository to get RPM's before a CentOS point release
+# repo --name centos_cr --baseurl="http://mirror.centos.org/centos/7/cr/x86_64/"
+
 # Firewall configuration
 firewall --disabled
 firstboot --disable
@@ -211,7 +214,8 @@ chrony
 clamav
 clamav-scanner
 # cloud-init
-cloud-utils-growpart
+# cloud-utils-growpart
+deltarpm
 dracut-config-generic
 dracut-norescue
 epel-release
