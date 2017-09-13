@@ -63,10 +63,12 @@ if [[ -z "$OCCS_PACKER_ANSIBLE_PASSWORD" ]]; then
 fi
 
 # http/ks.cfg is in .gitignore
-sed -i '.bak' -e "s@{{OCCS_PACKER_ANSIBLE_PASSWORD}}@$OCCS_PACKER_ANSIBLE_PASSWORD@g;s@{{OCCS_ANSIBLE_PUB_KEY}}@$OCCS_ANSIBLE_PUB_KEY@g" http/ks.cfg 
+#sed -i '.bak' -e "s@{{OCCS_PACKER_ANSIBLE_PASSWORD}}@$OCCS_PACKER_ANSIBLE_PASSWORD@g;s@{{OCCS_ANSIBLE_PUB_KEY}}@$OCCS_ANSIBLE_PUB_KEY@g" http/ks.cfg 
+sed -i'.bak' -e "s@{{OCCS_PACKER_ANSIBLE_PASSWORD}}@$OCCS_PACKER_ANSIBLE_PASSWORD@g" http/ks.cfg.tmpl > http/ks.cfg
 
 # private nessus information
-sed -i '.bak' -e "s@{{OCCS_NESSUS_AGENT_KEY}}@$OCCS_NESSUS_AGENT_KEY@g;s@{{OCCS_NESSUS_HOST}}@$OCCS_NESSUS_HOST@g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh 
+#sed -i '.bak' -e "s@{{OCCS_NESSUS_AGENT_KEY}}@$OCCS_NESSUS_AGENT_KEY@g;s@{{OCCS_NESSUS_HOST}}@$OCCS_NESSUS_HOST@g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh 
+sed -i'.bak' -e "s@{{OCCS_NESSUS_HOST}}@$OCCS_NESSUS_HOST@g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh 
 
 PACKER_LOG=1
 PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}.log"

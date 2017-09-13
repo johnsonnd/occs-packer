@@ -78,7 +78,7 @@ logvol /var/log    --fstype="xfs" --size=6144 --fsoptions="defaults,nodev,nosuid
 logvol /var/log/audit  --fstype="xfs" --size=1024 --fsoptions="defaults,nodev,nosuid,noexec,noatime,discard" --name=lv_audit --vgname=vg00
 logvol /usr/nlm        --fstype="xfs" --size=4098 --fsoptions="defaults,nodev,noatime,discard" --name=lv_nlm --vgname=vg00
 
-user --groups=wheel --homedir=/home/ansible --name=ansible --password="{{OCCS_PACKER_ANSIBLE_PASSWORD}}" --gecos="Ansible"
+user --groups=wheel --homedir=/home/ansible --name=ansible --password="4isl.STBSSS" --gecos="Ansible"
 
 %pre --interpreter=/bin/bash --logfile /tmp/ks-pre.log.1
 #!/bin/bash -x
