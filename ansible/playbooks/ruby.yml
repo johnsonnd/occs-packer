@@ -5,7 +5,7 @@
   #  remote_user: ansible
 
   vars:
-    ruby_version: "2.2"
+    ruby_version: "22"
     appadmin_include_ruby: yes
     appadmin_ruby_path: /opt/rh/rh-ruby22/enable
 

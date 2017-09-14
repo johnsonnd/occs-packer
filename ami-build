@@ -15,7 +15,7 @@ PLAYBOOK=$1
 
 AMI_REGION="us-east-1"
 AMI_BUILD_TIME="$(date +%F-%H-%M)"
-AMI_CHANGELOG_BUCKET="nlm-ami-import-logs-${AMI_REGION}"
+AMI_CHANGELOG_BUCKET="nlm-sec-import-logs-${AMI_REGION}"
 PACKER_TEE=/tmp/packer_tee_out.$$
 
 export AMI_BUILD_TIME
@@ -63,12 +63,12 @@ if [[ -z "$OCCS_PACKER_ANSIBLE_PASSWORD" ]]; then
 fi
 
 # http/ks.cfg is in .gitignore
-#sed -i '.bak' -e "s@{{OCCS_PACKER_ANSIBLE_PASSWORD}}@$OCCS_PACKER_ANSIBLE_PASSWORD@g;s@{{OCCS_ANSIBLE_PUB_KEY}}@$OCCS_ANSIBLE_PUB_KEY@g" http/ks.cfg 
-sed -i'.bak' -e "s@{{OCCS_PACKER_ANSIBLE_PASSWORD}}@$OCCS_PACKER_ANSIBLE_PASSWORD@g" http/ks.cfg.tmpl > http/ks.cfg
+#sed -i '.bak' -e "s@{{OCCS_PACKER_ANSIBLE_PASSWORD}}@$OCCS_PACKER_ANSIBLE_PASSWORD@g;s@{{OCCS_ANSIBLE_PUB_KEY}}@$OCCS_ANSIBLE_PUB_KEY@g" http/ks.cfg
+sed -e "s/{{OCCS_PACKER_ROOT_PASSWORD}}/${OCCS_PACKER_ROOT_PASSWORD}/g" http/ks.cfg.tmpl > http/ks.cfg
 
 # private nessus information
-#sed -i '.bak' -e "s@{{OCCS_NESSUS_AGENT_KEY}}@$OCCS_NESSUS_AGENT_KEY@g;s@{{OCCS_NESSUS_HOST}}@$OCCS_NESSUS_HOST@g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh 
-sed -i'.bak' -e "s@{{OCCS_NESSUS_HOST}}@$OCCS_NESSUS_HOST@g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh 
+#sed -i '.bak' -e "s@{{OCCS_NESSUS_AGENT_KEY}}@$OCCS_NESSUS_AGENT_KEY@g;s@{{OCCS_NESSUS_HOST}}@$OCCS_NESSUS_HOST@g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh
+#sed -i'.bak' -e "s@{{OCCS_NESSUS_HOST}}@${OCCS_NESSUS_HOST}@g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh
 
 PACKER_LOG=1
 PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}.log"
@@ -108,6 +108,6 @@ aws s3 cp ${rpm_log_current} s3://${AMI_CHANGELOG_BUCKET}/
 # Upload diff of RPM Log as RPM Changelog
 aws s3 cp logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt s3://${AMI_CHANGELOG_BUCKET}/
 
-echo "aws sns --topic-arn "arn:aws:sns:us-east-1:765460880451:nlm-sec-ami-import" --subject "${REGION_ID}: ${AMI_ID}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt --topic-arn"
+aws sns --topic-arn "arn:aws:sns:us-east-1:765460880451:nlm-sec-ami-import${AMI_REGION}" --subject "${AMI_REGION}: ${AMI_ID}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt --topic-arn
 
 exit $?
