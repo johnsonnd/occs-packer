@@ -1,6 +1,6 @@
 # Integration test of node AMI
 ---
-- hosts: localhost
+- hosts: all
   gather_facts: true
 
   tasks:
@@ -20,6 +20,15 @@
     - name: awslogs.conf exists
       assert:
         that: logsconf.stat.exists == true
+
+    # occs-awslogs nlminit ran
+    - stat:
+        path: /usr/nlm/bin/nlminit
+      register: nlminit
+
+    - name: nlminit exists
+      assert:
+        that: nlminit.stat.exists == true
 
     # occsab-httpd ran
     - stat:

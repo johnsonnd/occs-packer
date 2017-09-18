@@ -14,7 +14,11 @@
 
 - name: occs-awslogs
   src: https://github.com/NLM-OCCS/ansible-role-awslogs
-  version: '1.0'
+  version: '1.1'
+
+- name: occs-nlminit
+  src: https://github.com/NLM-OCCS/ansible-role-nlminit
+  version: '0.9'
 
 - name: occs-aws
   src: https://github.com/NLM-OCCS/ansible-role-aws
@@ -50,7 +54,7 @@
 
 - name: occsab-appadmin
   src: https://github.com/NLM-OCCS/occsab-appadmin
-  version: master
+  version: '0.9'
 
 - name: occsab-httpd
   src: https://github.com/NLM-OCCS/occsab-httpd
