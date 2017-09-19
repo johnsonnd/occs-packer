@@ -1,48 +1,109 @@
 #!/usr/bin/env bash
-
+#
 set -e
-
-if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
-    echo "Usage: $0 <playbook> [ <template-file> ]" 1>&2
-    exit 1
-fi
-
+shopt -s extglob
+#
 ## Trap signals and clean out build dir.
-[[ $0 =~ ^[.][/] ]] && BUILDDIR=$(pwd)/build || BUILDDIR=$(/bin/dirname ${0})/build
+[[ $0 =~ ^[.][/] ]] && BUILDDIR=$(pwd)/builds || BUILDDIR=$(/bin/dirname ${0})/builds
 trap '/bin/rm -rf ${BUILDDIR}/*' 0 1 2 3 15
 
-PLAYBOOK=$1
-
+## Static Variables
+#
 AMI_REGION="us-east-1"
-AMI_BUILD_TIME="$(date +%F-%H-%M)"
-AMI_CHANGELOG_BUCKET="nlm-sec-ami-import-logs-${AMI_REGION}"
+PACKER_LOG=1
 PACKER_TEE=/tmp/packer_tee_out.$$
 
-export AMI_BUILD_TIME
-
-TEMPLATE_FILE="CentOS-7-x86_64-Minimal.vbox.json"
-if [[ $# -eq 2 ]]; then
-    TEMPLATE_FILE=$2
+## Usage function
+#
+###########################################
+usage() {
+    echo
+    echo "Usage: ${0} [--playbook|--p] <playbook> [--t|--template] <template> [--r|--region] <region>"
+    echo "     : --playbook is required."
+    echo "     : --region default is us-east-1."
+    echo "     : --template requires '.json' file."
+    echo "     : --help print usage."
+    echo
+    exit 0
+}
+###########################################
+## need some args...
+#
+if [[ $# -lt 2 ]] || [[ $# -gt 6 ]]; then
+  usage && exit 1
 fi
 
-if [[ -f "$TEMPLATE_FILE" ]]; then
-    TEMPLATE_PATH="$TEMPLATE_FILE"
-elif [[ -f "templates/$TEMPLATE_FILE" ]]; then
-    TEMPLATE_PATH="templates/$TEMPLATE_FILE"
-else
-    echo "$TEMPLATE_FILE: template file not found" 1>&2
-    exit 1
-fi
+###########################################
+# Deal with options.
+#
+ARGS=("$@")
+for n in "${ARGS[@]}"
+do
 
-case $PLAYBOOK in
-    base) DESCRIPTION="CentOS 7 Base Image"; VMNAME="centos7_base" ;;
-    ruby) DESCRIPTION="CentOS 7 Ruby Image"; VMNAME="centos7_ruby" ;;
-    node) DESCRITION="CentOS 7 Node.js Image"; VMNAME="centos7_node" ;;
-    *) echo "$PLAYBOOK: invalid AMI build" 1>&2; exit 1 ;;
-esac
+ case "${n}" in
+  (--r|--region)
+      shift
+      AMI_REGION=${1} 
+      ;;
 
+  (--p|--playbook)
+      shift
+      PLAYBOOK=${1}
+      ;;
+
+  (--t|--template)
+      shift
+      TEMPLATE=${1}
+      ;;
+  (base|ruby|node)
+      PLAYBOOK=${n}
+      DESCRIPTION="CentOS 7 ${n^} Image"
+      VMNAME="centos7_${n}" 
+      ;;
+  (?*.json)
+      TEMPLATE=${n}
+      ;;
+  ([uceas][saup]-?*)
+      AMI_REGION=${n}
+      ;;
+  (--help)
+      usage && exit 0
+      ;;
+  (?*)
+     shift
+     ;;
+  (*)
+     break
+     ;;
+ esac
+done
+###########################################
+
+## Dynamic Variables
+#
+AMI_BUILD_TIME="$(date +%F-%H-%M)"
+AMI_CHANGELOG_BUCKET="nlm-sec-import-logs-${AMI_REGION}"
 rpm_log_previous=$(ls -1 logs/rpm-log-${VMNAME}* 2>/dev/null| sort -n | tail -n 1)
+PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}.log"
 
+## Do we need to export this??
+export AMI_BUILD_TIME 
+
+## Test a bunch of stuff
+#
+###################################################
+## Use first found of TEMPLATE and force use of templates dir
+#
+TEMPLATE_FILE=$(find ${PWD}|egrep ${TEMPLATE}|egrep template)
+if [[ -z "${TEMPLATE_FILE}" ]]; then
+  echo "Template file <${TEMPLATE_FILE}> not found in template dir." 1>&2
+  exit 1
+fi
+###################################################
+
+###################################################
+## Make sure variables are set.
+#
 if [[ -f $HOME/.occs_packer_variables ]]; then
     . $HOME/.occs_packer_variables
 else
@@ -51,7 +112,11 @@ else
     echo "" 1>&2
     exit 1
 fi
+###################################################
 
+###################################################
+## Need packer passwords from occs_packer_variables
+#
 if [[ -z "$OCCS_PACKER_ROOT_PASSWORD" ]]; then
     echo "Specify OCCS_PACKER_ROOT_PASSWORD in \$HOME/.occs_packer_variables" 1>&2
     exit 1
@@ -61,40 +126,60 @@ if [[ -z "$OCCS_PACKER_ANSIBLE_PASSWORD" ]]; then
     echo "Specify OCCS_PACKER_ANSIBLE_PASSWORD in \$HOME/.occs_packer_variables" 1>&2
     exit 1
 fi
+###################################################
 
-# http/ks.cfg is in .gitignore
-sed -e "s/{{OCCS_PACKER_ROOT_PASSWORD}}/${OCCS_PACKER_ROOT_PASSWORD}/g" http/ks.cfg.tmpl > http/ks.cfg
-
-# private nessus information
-sed -e "s/{{OCCS_NESSUS_AGENT_KEY}}/${OCCS_NESSUS_AGENT_KEY}/g;s/{{OCCS_NESSUS_HOST}}/${OCCS_NESSUS_HOST}/g" files/etc/nessus.txt.tmpl > files/etc/nessus.txt
-
-PACKER_LOG=1
-PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}.log"
-
+###################################################
+## Packer log.
+#
 if [ -f $PACKER_LOG_PATH ]; then
     PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}-$(date +%S).log"
 fi
+## Do we need to export this??
+export PACKER_LOG PACKER_LOG_PATH
+###################################################
 
-export PACKER_LOG
-export PACKER_LOG_PATH
+###################################################
+## Switch out passwords from occs_packer_variables to ks.cfg
+#
+# http/ks.cfg is in .gitignore
+#
+sed -e "s/{{OCCS_PACKER_ROOT_PASSWORD}}/${OCCS_PACKER_ROOT_PASSWORD}/g" http/ks.cfg.tmpl > http/ks.cfg
 
+## private nessus information
+#
+#sed -i'.bak' -e "s@{{OCCS_NESSUS_HOST}}@${OCCS_NESSUS_HOST}@g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh
+###################################################
+
+###################################################
+## Run packer build
+#
 packer build --on-error=ask \
      -var "vm_name=$VMNAME" \
      -var "playbook=$PLAYBOOK" \
      -var "description=$DESCRIPTION" \
- $TEMPLATE_PATH | tee ${PACKER_TEE}
+ $TEMPLATE_FILE | tee ${PACKER_TEE}
 
-read AMI_ID < <(awk -F: '/: ami-/{print $1,$2}' ${PACKER_TEE} && [ -f ${PACKER_TEE} ] && rm -rf ${PACKER_TEE})
+## Get AMI_ID from packer build from tee of output
+#
+read REGION_ID AMI_ID < <(awk -F: '/: ami-/{print $1,$2}' ${PACKER_TEE} && [ -f ${PACKER_TEE} ] && rm -rf ${PACKER_TEE})
 
 mkdir -p archive/${VMNAME}
 mv builds/${VMNAME}/* archive/${VMNAME}/
-
 rm -rf builds/${VMNAME}
 
+# Get latest log
+#
 rpm_log_current=$(ls -1 logs/rpm-log-${VMNAME}* 2>/dev/null| sort -n | tail -n 1)
 
 sdiff -s $rpm_log_previous $rpm_log_current || true > logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
+###################################################
 
+###################################################
+## Run AWS stuff
+#
+
+## Do we need to export these??
+#
 export AWS_ACCESS_KEY_ID=${OCCS_PACKER_AWS_ACCESS_KEY}
 export AWS_SECRET_ACCESS_KEY=${OCCS_PACKER_AWS_SECRET_KEY}
 export AWS_DEFAULT_REGION=${AMI_REGION}
@@ -110,9 +195,10 @@ fi
 aws s3 cp logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt s3://${AMI_CHANGELOG_BUCKET}/
 
 aws sns publish --topic-arn "arn:aws:sns:${AMI_REGION}:765460880451:nlm-sec-ami-import-email-${AMI_REGION}" \
-    --subject "${AMI_REGION}: ${AMI_ID}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
+  --subject "${AMI_REGION}: ${AMI_ID}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
 
-# aws sns publish --topic-arn "arn:aws:sns:${AMI_REGION}:765460880451:nlm-sec-ami-import-lambda-${AMI_REGION}" \
-#    --subject "${AMI_REGION}: ${AMI_ID}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
-
+###################################################
+## DONE
+#
 exit $?
+###################################################
