@@ -72,6 +72,11 @@
     },
     {
       "type": "file",
+      "source": "ansible/hosts",
+      "destination": "/etc/ansible/hosts"
+    },
+    {
+      "type": "file",
       "source": "files/tmp/CloudWatchMonitoringScripts-1.2.1.zip",
       "destination": "/tmp/CloudWatchMonitoringScripts-1.2.1.zip",
       "direction": "upload"
@@ -97,7 +102,8 @@
     {
       "type": "ansible-local",
       "playbook_file": "ansible/playbooks/{{ user `playbook` }}.yml",
-      "galaxy_file": "ansible/requirements.yml"
+      "galaxy_file": "ansible/requirements.yml",
+      "staging_directory": "/etc/ansible"
     },
     {
       "type": "shell",
