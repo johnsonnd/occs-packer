@@ -7,6 +7,8 @@
   vars:
     postfix_ses_packer_build: True
 
+    awslogs_region: us-east-1
+
     nodejs_install_dir: /usr/nlm
     nodejs_version: "6.11.1"
 
