@@ -43,7 +43,7 @@ do
  case "${n}" in
   (--r|--region)
       shift
-      AMI_REGION=${1} 
+      AMI_REGION=${1}
       ;;
 
   (--p|--playbook)
@@ -58,7 +58,7 @@ do
   (base|ruby|node)
       PLAYBOOK=${n}
       DESCRIPTION="CentOS 7 ${n^} Image"
-      VMNAME="centos7_${n}" 
+      VMNAME="centos7_${n}"
       ;;
   (?*.json)
       TEMPLATE=${n}
@@ -82,12 +82,12 @@ done
 ## Dynamic Variables
 #
 AMI_BUILD_TIME="$(date +%F-%H-%M)"
-AMI_CHANGELOG_BUCKET="nlm-sec-import-logs-${AMI_REGION}"
+AMI_CHANGELOG_BUCKET="nlm-sec-ami-import-logs-${AMI_REGION}"
 rpm_log_previous=$(ls -1 logs/rpm-log-${VMNAME}* 2>/dev/null| sort -n | tail -n 1)
 PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}.log"
 
 ## Do we need to export this??
-export AMI_BUILD_TIME 
+export AMI_BUILD_TIME
 
 ## Test a bunch of stuff
 #
