@@ -18,7 +18,7 @@
 
 - name: occs-nlminit
   src: https://github.com/NLM-OCCS/ansible-role-nlminit
-  version: '0.9'
+  version: master
 
 - name: occs-aws
   src: https://github.com/NLM-OCCS/ansible-role-aws
