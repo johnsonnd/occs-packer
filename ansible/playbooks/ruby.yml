@@ -5,7 +5,10 @@
   #  remote_user: ansible
 
   vars:
+    postfix_ses_packer_build: True
+
     ruby_version: "22"
+
     appadmin_include_ruby: yes
     appadmin_ruby_path: /opt/rh/rh-ruby22/enable
 

@@ -78,14 +78,8 @@
     },
     {
       "type": "file",
-      "source": "files/etc/systemd/system/firstboot.service",
-      "destination": "/etc/systemd/system/firstboot.service",
-      "direction": "upload"
-    },
-    {
-      "type": "file",
-      "source": "files/root/firstboot.sh",
-      "destination": "/root/firstboot.sh"
+      "source": "files/etc/nessus.txt",
+      "destination": "/etc/nessus.txt"
     },
     {
       "type": "file",

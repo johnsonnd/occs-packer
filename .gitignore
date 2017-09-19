@@ -19,8 +19,10 @@ packer_cache/
 /files/tmp/*.tar.gz
 /files/tmp/*.rpm
 /http/ks.cfg
+/file/etc/nessus.txt
 /files/root/firstboot.sh
 awscreds.sh
+*.bak
 *.retry
 *.pyc
 *.pyo

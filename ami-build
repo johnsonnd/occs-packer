@@ -15,7 +15,7 @@ PLAYBOOK=$1
 
 AMI_REGION="us-east-1"
 AMI_BUILD_TIME="$(date +%F-%H-%M)"
-AMI_CHANGELOG_BUCKET="nlm-sec-import-logs-${AMI_REGION}"
+AMI_CHANGELOG_BUCKET="nlm-sec-ami-import-logs-${AMI_REGION}"
 PACKER_TEE=/tmp/packer_tee_out.$$
 
 export AMI_BUILD_TIME
@@ -63,12 +63,10 @@ if [[ -z "$OCCS_PACKER_ANSIBLE_PASSWORD" ]]; then
 fi
 
 # http/ks.cfg is in .gitignore
-#sed -i '.bak' -e "s@{{OCCS_PACKER_ANSIBLE_PASSWORD}}@$OCCS_PACKER_ANSIBLE_PASSWORD@g;s@{{OCCS_ANSIBLE_PUB_KEY}}@$OCCS_ANSIBLE_PUB_KEY@g" http/ks.cfg
 sed -e "s/{{OCCS_PACKER_ROOT_PASSWORD}}/${OCCS_PACKER_ROOT_PASSWORD}/g" http/ks.cfg.tmpl > http/ks.cfg
 
 # private nessus information
-#sed -i '.bak' -e "s@{{OCCS_NESSUS_AGENT_KEY}}@$OCCS_NESSUS_AGENT_KEY@g;s@{{OCCS_NESSUS_HOST}}@$OCCS_NESSUS_HOST@g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh
-#sed -i'.bak' -e "s@{{OCCS_NESSUS_HOST}}@${OCCS_NESSUS_HOST}@g" files/root/firstboot.sh.tmpl > files/root/firstboot.sh
+sed -e "s/{{OCCS_NESSUS_AGENT_KEY}}/${OCCS_NESSUS_AGENT_KEY}/g;s/{{OCCS_NESSUS_HOST}}/${OCCS_NESSUS_HOST}/g" files/etc/nessus.txt.tmpl > files/etc/nessus.txt
 
 PACKER_LOG=1
 PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}.log"
@@ -86,8 +84,7 @@ packer build --on-error=ask \
      -var "description=$DESCRIPTION" \
  $TEMPLATE_PATH | tee ${PACKER_TEE}
 
-#read REGION_ID AMI_ID < <(awk -F: '/: ami-/{print $1,$2}' ${PACKER_TEE})
-read REGION_ID AMI_ID < <(awk -F: '/: ami-/{print $1,$2}' ${PACKER_TEE} && [ -f ${PACKER_TEE} ] && rm -rf ${PACKER_TEE})
+read AMI_ID < <(awk -F: '/: ami-/{print $1,$2}' ${PACKER_TEE} && [ -f ${PACKER_TEE} ] && rm -rf ${PACKER_TEE})
 
 mkdir -p archive/${VMNAME}
 mv builds/${VMNAME}/* archive/${VMNAME}/
@@ -100,14 +97,22 @@ sdiff -s $rpm_log_previous $rpm_log_current || true > logs/rpm_changelog_${VMNAM
 
 export AWS_ACCESS_KEY_ID=${OCCS_PACKER_AWS_ACCESS_KEY}
 export AWS_SECRET_ACCESS_KEY=${OCCS_PACKER_AWS_SECRET_KEY}
-export AWS_DEFAULT_REGION=us-east-1
+export AWS_DEFAULT_REGION=${AMI_REGION}
 
 # Upload contents of AMI at ami_build_time
 aws s3 cp ${rpm_log_current} s3://${AMI_CHANGELOG_BUCKET}/
 
+if [[ ! -f logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt ]]; then
+  echo "No Changes for this build" > logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
+fi
+
 # Upload diff of RPM Log as RPM Changelog
 aws s3 cp logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt s3://${AMI_CHANGELOG_BUCKET}/
 
-aws sns --topic-arn "arn:aws:sns:us-east-1:765460880451:nlm-sec-ami-import${AMI_REGION}" --subject "${AMI_REGION}: ${AMI_ID}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt --topic-arn
+aws sns publish --topic-arn "arn:aws:sns:${AMI_REGION}:765460880451:nlm-sec-ami-import-email-${AMI_REGION}" \
+    --subject "${AMI_REGION}: ${AMI_ID}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
+
+# aws sns publish --topic-arn "arn:aws:sns:${AMI_REGION}:765460880451:nlm-sec-ami-import-lambda-${AMI_REGION}" \
+#    --subject "${AMI_REGION}: ${AMI_ID}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
 
 exit $?
