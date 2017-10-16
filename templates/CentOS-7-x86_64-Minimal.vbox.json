@@ -77,8 +77,8 @@
     },
     {
       "type": "file",
-      "source": "files/tmp/CloudWatchMonitoringScripts-1.2.1.zip",
-      "destination": "/tmp/CloudWatchMonitoringScripts-1.2.1.zip",
+      "source": "/tmp/sasl_credentials.yml",
+      "destination": "/tmp/sasl_credentials.yml",
       "direction": "upload"
     },
     {

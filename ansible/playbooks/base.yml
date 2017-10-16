@@ -5,6 +5,7 @@
 
   vars:
     postfix_ses_packer_build: True
+    postfix_ses_default_from: nlmunixhelp@nlm.nih.gov
 
     awslogs_region: us-east-1
 
@@ -21,5 +22,6 @@
     - { role: occs-chrony,                    tags: chrony }
     - { role: occs-ec2,                       tags: ec2 }
     - { role: occs-nlminit,                   tags: nlminit }
+    - { role: occs-postfix-ses,               tags: postfix-ses }
     # Commented out - we will try a different way
     # - { role: splunk-forwarder,               tags: splunkforwarder }

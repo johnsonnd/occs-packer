@@ -129,6 +129,14 @@ fi
 ###################################################
 
 ###################################################
+##
+#
+echo "postfix_ses_username: $OCCS_POSTFIX_SES_USERNAME" > /tmp/sasl_credentials.yml
+echo "postfix_ses_password: $OCCS_POSTFIX_SES_PASSWORD" >> /tmp/sasl_credentials.yml
+chmod 600 /tmp/sasl_credentials.yml
+###################################################
+
+###################################################
 ## Packer log.
 #
 if [ -f $PACKER_LOG_PATH ]; then
@@ -151,7 +159,7 @@ sed -e "s/{{OCCS_PACKER_ROOT_PASSWORD}}/${OCCS_PACKER_ROOT_PASSWORD}/g" http/ks.
 ###################################################
 
 ###################################################
-## Run packer build
+## Run packer build and cleanup files
 #
 packer build --on-error=ask \
      -var "vm_name=$VMNAME" \
@@ -166,6 +174,7 @@ read REGION_ID AMI_ID < <(awk -F: '/: ami-/{print $1,$2}' ${PACKER_TEE} && [ -f 
 mkdir -p archive/${VMNAME}
 mv builds/${VMNAME}/* archive/${VMNAME}/
 rm -rf builds/${VMNAME}
+rm -rf /tmp/sasl_credentials.yml
 
 # Get latest log
 #
@@ -178,7 +187,7 @@ sdiff -s $rpm_log_previous $rpm_log_current || true > logs/rpm_changelog_${VMNAM
 ## Run AWS stuff
 #
 
-## Do we need to export these??
+## Exports for aws cli commands
 #
 export AWS_ACCESS_KEY_ID=${OCCS_PACKER_AWS_ACCESS_KEY}
 export AWS_SECRET_ACCESS_KEY=${OCCS_PACKER_AWS_SECRET_KEY}

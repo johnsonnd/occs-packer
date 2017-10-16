@@ -203,6 +203,64 @@ sed -i 's/console=tty0/console=tty0 console=ttyS0,115200n8/' /boot/grub2/grub.cf
 chown -R ansible.ansible /home/ansible/.ssh
 chmod 644 /home/ansible/.ssh/authorized_keys
 
+# ----- bind /var/tmp to /tmp
+cat >> /etc/fstab <<FSTAB
+
+/tmp                            /var/tmp        xfs     defaults,nodev,nosuid,noexec,bind  0 0
+
+tmpfs                   /dev/shm                tmpfs   defaults,nodev,nosuid,noexec        0 0
+devpts                  /dev/pts                devpts  gid=5,mode=620  0 0
+sysfs                   /sys                    sysfs   defaults        0 0
+proc                    /proc                   proc    defaults        0 0
+FSTAB
+
+# ----- Set grub timeout to 5 seconds isntead of 30
+# ----- Setup grub to have elevator=noop before reboot -----
+if [ -r "/etc/default/grub" ]; then
+    perl -pi -e 's,^GRUB_TIMEOUT=5$,GRUB_TIMEOUT=1,' /etc/default/grub
+    perl -pi -e 's,GRUB_CMDLINE_LINUX="(.*)"$,GRUB_CMDLINE_LINUX="$1 elevator=noop",' /etc/default/grub
+fi
+
+# ----- ensure permissions on bootloader are configured
+chmod 640 /boot/grub2/grub
+
+# ----- configure sysctl
+cat >> /etc/sysctl.d/98-nlm.conf < NLMCONF
+net.ipv4.ip_forward = 0
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.all.log_martians = 1
+net.ipv4.conf.default.log_martians = 1
+net.ipv4.conf.all.secure_redirects = 0
+net.ipv4.conf.default.secure_redirects = 0
+net.ipv4.icmp_ignore_bogus_error_responses = 1
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.default.rp_filter = 1
+
+net.ipv6.conf.all.accept_ra = 0
+net.ipv6.conf.default.accept_ra = 0
+net.ipv6.conf.all.accept_redirects = 0
+net.ipv6.conf.default.accept_redirects = 0
+NLMCONF
+
+echo >> /etc/modprobe.d/CIS.conf < CISCONF
+install cramfs /bin/true
+install freevxfs /bin/true
+install jffs2 /bin/true
+install hfs /bin/true
+install hfsplus /bin/true
+install squashfs /bin/true
+install udf /bin/true
+install vfat /bin/true
+CISCONF
+
+chmod 700 /etc/cron.daily
+chmod 700 /etc/cron.weekly
+chmod 700 /etc/cron.monthly
+chmod 700 /etc/cron.d
+
+
 # Switch Anaconda to the first console
 chvt 1
 exec < /dev/tty1 > /dev/tty1 2> /dev/tty1
