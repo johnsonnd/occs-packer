@@ -82,8 +82,8 @@ done
 ## Dynamic Variables
 #
 AMI_BUILD_TIME="$(date +%F-%H-%M)"
-AMI_CHANGELOG_BUCKET="nlm-sec-ami-import-logs-${AMI_REGION}"
-rpm_log_previous=$(ls -1 logs/rpm-log-${VMNAME}* 2>/dev/null| sort -n | tail -n 1)
+AMI_CHANGELOG_BUCKET="nlm-int-ami-import-logs-${AMI_REGION}"
+rpm_log_previous=$(ls -1 logs/rpm-log-${VMNAME}* 2>/dev/null | sort -n | tail -n 1)
 PACKER_LOG_PATH="logs/debug-${VMNAME}-${AMI_BUILD_TIME}.log"
 
 ## Do we need to export this??
@@ -178,9 +178,9 @@ rm -rf /tmp/sasl_credentials.yml
 
 # Get latest log
 #
-rpm_log_current=$(ls -1 logs/rpm-log-${VMNAME}* 2>/dev/null| sort -n | tail -n 1)
+rpm_log_current=$(ls -1 logs/rpm-log-${VMNAME}* 2>/dev/null | sort -n | tail -n 1)
 
-sdiff -s $rpm_log_previous $rpm_log_current || true > logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
+sdiff -s ${rpm_log_previous} ${rpm_log_current} || true > logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
 ###################################################
 
 ###################################################
@@ -203,8 +203,8 @@ fi
 # Upload diff of RPM Log as RPM Changelog
 aws s3 cp logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt s3://${AMI_CHANGELOG_BUCKET}/
 
-aws sns publish --topic-arn "arn:aws:sns:${AMI_REGION}:765460880451:nlm-sec-ami-import-email-${AMI_REGION}" \
-  --subject "${AMI_REGION}: ${AMI_ID}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
+aws sns publish --topic-arn "arn:aws:sns:${AMI_REGION}:758297805533:nlm-int-ami-import-email-${AMI_REGION}" \
+  --subject "${AMI_REGION}: ${AMI_ID} ${VMNAME}" --message file://logs/rpm_changelog_${VMNAME}-${AMI_BUILD_TIME}.txt
 
 ###################################################
 ## DONE
