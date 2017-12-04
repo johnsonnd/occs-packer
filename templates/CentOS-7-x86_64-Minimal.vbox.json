@@ -4,7 +4,7 @@
   "variables": {
     "aws_access_key": "{{ env `OCCS_PACKER_AWS_ACCESS_KEY` }}",
     "aws_secret_key": "{{ env `OCCS_PACKER_AWS_SECRET_KEY` }}",
-    "aws_s3_bucket_name": "nlm-sec-ami-import-us-east-1",
+    "aws_s3_bucket_name": "nlm-int-ami-import-us-east-1",
     "boot_wait": "5s",
     "headless": "{{ env `OCCS_PACKER_HEADLESS` }}",
     "http_directory": "http",
